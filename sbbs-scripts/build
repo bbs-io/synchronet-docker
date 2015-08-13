@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+printf "\n\n=============================================\nBuilding Latest Synchronet BBS from CVS...\n"
+
+apt-get update
+apt-get install cvs zip libnspr4
+
+mkdir /sbbs-base
+cd /sbbs-base
+
+wget 'http://cvs.synchro.net/cgi-bin/viewcvs.cgi/*checkout*/install/GNUmakefile'
+
+make install SBBSDIR=/sbbs-base
+
+printf "\n\nSynchronet BBS Build Complete.\n=============================================\n\n"

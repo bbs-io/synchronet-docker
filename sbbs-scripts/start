@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# TODO: Check to see if the SBBS is configured
+
+# TODO: If SBBS is configured, start it
+
+# for now, just loop so the container stays open
+while :; do printf ''; sleep 60; done

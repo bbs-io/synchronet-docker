@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Create ./sbbs for volume mapping
+printf "\n---\nCreationg ./sbbs if needed\n"
+mkdir -p ./sbbs
+
+# kill any previous instance
+printf "\n---\nKilling previous 'sbbs' container, if needed (ignore errors)\n"
+docker kill sbbs
+
+# remove the image
+printf "\n---\nRemoving previous 'sbbs' container\n"
+docker rm sbbs
+
+#create new image
+printf "\n---\nCreating 'local/sbbs' image\n"
+docker build -t local/sbbs .
+
+#create container instance against new image
+printf "\n---\nCreating named 'sbbs' container\n"
+docker run --name=sbbs -v $(pwd)/sbbs:/sbbs local/sbbs &
+
+
+printf "\n---\nSynchronet BBS Installed - run sbbs-init to initialize.\n\n"
