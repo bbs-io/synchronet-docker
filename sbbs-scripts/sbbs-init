@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+printf '\n\nChecking Synchronet Initialization...\n'
+
+printf "\n\nCreating directories for nodes 1-25\n\n"
+
+mkdir -p /sbbs
+
+# initial ctrl directory
+if [ ! -d /sbbs/ctrl ]; then
+  cp -r /sbbs-base/ctrl /sbbs/ctrl
+fi
+
+# initial docs directory
+if [ ! -d /sbbs/docs ]; then
+  cp -r /sbbs-base/docs /sbbs/docs
+fi
+
+# initial text directory
+if [ ! -d /sbbs/text ]; then
+  cp -r /sbbs-base/text /sbbs/text
+fi
+
+# initial web directory
+if [ ! -d /sbbs/web ]; then
+  cp -r /sbbs-base/web /sbbs/web
+fi
+
+# initial xtrn directory
+if [ ! -d /sbbs/xtrn ]; then
+  cp -r /sbbs-base/xtrn /sbbs/xtrn
+fi
+
+# update exec as needed
+mkdir -p /sbbs/exec
+cp -n /sbbs-base/exec/*.* /sbbs/exec
+mkdir -p /sbbs/exec/tone
+cp -n /sbbs-base/exec/tone/*.* /sbbs/exec/tone
+
+# force update of updated executibles (files without extension)
+
+
+#create 25 node directories as needed
+n=1
+max=25
+while [ "$n" -le "$max" ]; do
+  if [ ! -d "node$n" ]; then
+    cp -r /sbbs-base/node1 "/sbbs/node$n"
+    n=`expr "$n" + 1`;
+  fi
+done

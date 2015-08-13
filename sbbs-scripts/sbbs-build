@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+printf "\n\n=============================================\nBuilding Latest Synchronet BBS from CVS...\n"
+
+apt-get update
+apt-get install cvs zip libnspr4 libnspr4-dev
+
+mkdir /sbbs
+cd /sbbs
+
+wget 'http://cvs.synchro.net/cgi-bin/viewcvs.cgi/*checkout*/install/GNUmakefile'
+
+make install SBBSDIR=/sbbs
+
+printf "\n\nCleanup source files\n\n"
+cd /sbbs
+rm -Rf src
+rm -Rf 3rdp
+rm -Rf node2
+rm -Rf node3
+rm -Rf node4
+rm GNUmakefile
+find . -name CVS -exec rm -rf {} \; 
+printf "\n\nSynchronet BBS source files cleaned up.\n\n"
+
+cd /
+mv /sbbs /sbbs-base
+
+printf "\n\nSynchronet BBS Build Complete.\n=============================================\n\n"
