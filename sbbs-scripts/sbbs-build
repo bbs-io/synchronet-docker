@@ -2,15 +2,32 @@
 
 printf "\n\n=============================================\nBuilding Latest Synchronet BBS from CVS...\n"
 
+
+printf "\n\nPATH=/sbbs-scripts:\$PATH:/sbbs/exec:/sbbs-base/exec\n\n" >> /root/.bashrc
+printf "\n\nSBBSCTRL=/sbbs/ctrl\n" >> /root/.bashrc
+printf "\nTERM=dumb\n" >> /root/.bashrc
+
+printf "\n\n---\nUpdating package sources"
+rm /etc/apt/sources.list
+printf "\ndeb http://httpredir.debian.org/debian jessie main contrib non-free" >> /etc/apt/sources.list
+printf "\ndeb-src http://httpredir.debian.org/debian jessie main contrib non-free" >> /etc/apt/sources.list
+printf "\ndeb http://httpredir.debian.org/debian jessie-updates main contrib non-free" >> /etc/apt/sources.list
+printf "\ndeb-src http://httpredir.debian.org/debian jessie-updates main contrib non-free" >> /etc/apt/sources.list
+printf "\ndeb http://security.debian.org/ jessie/updates main contrib non-free" >> /etc/apt/sources.list
+printf "\ndeb-src http://security.debian.org/ jessie/updates main contrib non-free" >> /etc/apt/sources.list
 apt-get update
-apt-get install cvs zip libnspr4 libnspr4-dev
+
+
+printf "\n\n---\nInstalling dependencies\n"
+apt-get install -y cvs zip libnspr4 libnspr4-dev dosemu
 
 mkdir /sbbs
 cd /sbbs
 
+printf "\n\n---\nDownloading Synchronet Installer Script"
 wget 'http://cvs.synchro.net/cgi-bin/viewcvs.cgi/*checkout*/install/GNUmakefile'
 
-make install SBBSDIR=/sbbs
+make install SBBSDIR=/sbbs USEDOSEMU=1
 
 printf "\n\nCleanup source files\n\n"
 cd /sbbs
@@ -23,6 +40,12 @@ rm GNUmakefile
 find . -name CVS -exec rm -rf {} \; 
 printf "\n\nSynchronet BBS source files cleaned up.\n\n"
 
+printf "\n\nCleanup cache files\n\n"
+apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+
+printf "\n\n\nPrepping SBBS Base\n\n"
 cd /
 mv /sbbs /sbbs-base
 

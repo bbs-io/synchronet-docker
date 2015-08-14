@@ -2,14 +2,16 @@
 
 printf '\n\nChecking Synchronet Initialization...\n'
 
-printf "\n\nCreating directories for nodes 1-25\n\n"
-
 mkdir -p /sbbs
+mkdir -p /sbbs/backup
 
 # initial ctrl directory
 if [ ! -d /sbbs/ctrl ]; then
   cp -r /sbbs-base/ctrl /sbbs/ctrl
 fi
+
+# initial ctrl directory
+mkdir -p /sbbs/data
 
 # initial docs directory
 if [ ! -d /sbbs/docs ]; then

@@ -8,4 +8,4 @@ RUN /sbbs-scripts/sbbs-build && rm /sbbs-scripts/sbbs-build
 
 ENV SBBSCTRL /sbbs/ctrl
 
-CMD [ "/sbbs-scripts/start" ]
+CMD [ "/sbbs-scripts/sbbs-start" ]

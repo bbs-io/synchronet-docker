@@ -4,14 +4,55 @@
 
 This project is for creating a [Synchronet BBS Software](http://www.synchro.net/) setup that will run inside of a docker container, as well as utility scripts for better Dockerization.
 
-This will be is based on Ubuntu and will have Node/io.js installed for resource scripts.  It will also be pre-configured to support dosemu for dos based doors.
+This it is based on Debian Jesse (iojs) and will have Node/io.js installed for resource scripts.  It is also be configured for dosemu for dos based doors.
 
 
 ## Setup 
 
-You should always run/exec anything within a synchronet-docker container instance with a volume mount for `/sbbs` so that data and configuration can be preserved.
-
 This section will be expanded as I work through setup and configuration.  For now, it will be necessary to run bash inside the container instance to run what you want.
+
+
+### install
+
+You should create a directory of `sbbs` and use that as a volume for your running container.   The commands below will create a directory under your current user's profile, then use that as the `/sbbs` path inside the container. 
+
+```
+cd ~/
+
+mkdir sbbs
+
+docker run --name=sbbs -v $(pwd)/sbbs:/sbbs -v $(pwd)/ tracker1/sbbs &
+```
+
+From here, you should connect to a bash prompt in the container to run `sbbs-init` inside the container, and then you can use `scfg -iD`.
+
+----
+
+**WARNING** For now, this only runs a loop that doesn't do anything, it allows the container to stay running so you can `EXEC` a bash prompt.
+
+
+### sbbs-bash
+
+In order to connect to a bash prompt in the running container, for the purpose of configuration, or other adjustments, you will want to use the following command.  You may want to create an alias in your `~/.bashrc` in your host environment.
+
+```
+docker exec -it sbbs bash
+```
+
+The following environment changes are added to the bash prompt.
+
+* `/sbbs-scripts` is added to the path
+* `/sbbs/exec` is added to the path
+* `/sbbs-base/exec` is added to the path
+* `$SBBSCTRL` is set to `/sbbs/ctrl` path
+
+You should run `sbbs-init` the first time you connect to bash, before running any other commands to ensure the environment is properly configured.
+
+
+### scfg
+
+You should use `scfg -iD` which will use plain text prompts instead of the interactive UI, which works better inside a container.
+
 
 ### Warnings
 
@@ -27,12 +68,6 @@ There are several reasons why I'm writing the scripts for this system in Node/Ja
 * Synchronet uses JavaScript as its' own scripting engine
 * JavaScript is widely known and used
 * I know JS/Node
-
-
-
-## SBBS Scripts
-
-The `sbbs-scripts` directory will be added to the root of the container.  The this will be prepended to `$PATH` via `/root/.bashrc`.  Beyond this, some scripts will be exposed to ease setup/initialization.
 
 
 ## Technical Details
@@ -54,7 +89,8 @@ In order to support containerizing Synchronet, scripts from this project's `sbbs
 
 It will do the following:
 
-* Copy any missing directories from `/sbbs-build/*` to `/sbbs/*` excluding `/sbbs-build/bin`. (Use `/sbbs/mods` for custom bin/overrides).
+* Copy any missing directories from `/sbbs-build/*` to `/sbbs/*` excluding `/sbbs-build/bin`.
+  * `/sbbs/mods`, if missing will be initialized with any Baja and JavaScript scripts.  
 * Set `$SBBSCTRL` to `/sbbs/ctrl` so that SBBS will execute based on the `/sbbs/` path.
 * Run through setup/upgrades based on the installed version, and prior options in the `/sbbs` path.
 
