@@ -5,4 +5,4 @@
 # TODO: If SBBS is configured, start it
 
 # for now, just loop so the container stays open
-while :; do printf ''; sleep 60; done
+while :; do printf ''; sleep 5; done

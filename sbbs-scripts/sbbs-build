@@ -3,7 +3,7 @@
 printf "\n\n=============================================\nBuilding Latest Synchronet BBS from CVS...\n"
 
 
-printf "\n\nPATH=/sbbs-scripts:\$PATH:/sbbs-base/exec\n\n" >> /root/.bashrc
+printf "\n\nPATH=\$PATH:/sbbs-scripts:/sbbs-base/exec\n\n" >> /root/.bashrc
 printf "\n\nSBBSCTRL=/sbbs/ctrl\n" >> /root/.bashrc
 printf "\nTERM=dumb\n" >> /root/.bashrc
 
@@ -27,7 +27,9 @@ cd /sbbs
 printf "\n\n---\nDownloading Synchronet Installer Script"
 wget 'http://cvs.synchro.net/cgi-bin/viewcvs.cgi/*checkout*/install/GNUmakefile'
 
-make install SBBSDIR=/sbbs USEDOSEMU=1
+printf "Compiling... this will take a while..."
+make install SBBSDIR=/sbbs USEDOSEMU=1 
+#> ./sbbs-install.log 2> ./sbbs-install-errors.log
 
 printf "\n\nCleanup source files\n\n"
 cd /sbbs

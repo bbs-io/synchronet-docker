@@ -33,11 +33,13 @@ if [ ! -d /sbbs/xtrn ]; then
   cp -r /sbbs-base/xtrn /sbbs/xtrn
 fi
 
-# update exec as needed
+# update exec as needed - doesn't copy extensionless files (linux executables)
 mkdir -p /sbbs/exec
 cp -n /sbbs-base/exec/*.* /sbbs/exec
 mkdir -p /sbbs/exec/tone
 cp -n /sbbs-base/exec/tone/*.* /sbbs/exec/tone
+mkdir -p /sbbs/exec/load
+cp -n /sbbs-base/exec/load/*.* /sbbs/exec/load
 
 # force update of updated executibles (files without extension)
 
