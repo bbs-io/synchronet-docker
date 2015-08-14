@@ -18,7 +18,7 @@ docker build -t local/sbbs .
 
 #create container instance against new image
 printf "\n---\nCreating named 'sbbs' container\n"
-docker run --name=sbbs -v $(pwd)/sbbs:/sbbs -v $(pwd)/sbbs-scripts:/sbbs-scripts local/sbbs &
+docker run --name=sbbs -v $(pwd)/sbbs:/sbbs -v $(pwd)/sbbs-scripts:/sbbs-scripts local/sbbs
 
 
 printf "\n---\nSynchronet BBS Installed - run sbbs-init to initialize.\n\n"

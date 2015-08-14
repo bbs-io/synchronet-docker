@@ -3,7 +3,7 @@
 printf "\n\n=============================================\nBuilding Latest Synchronet BBS from CVS...\n"
 
 
-printf "\n\nPATH=/sbbs-scripts:\$PATH:/sbbs/exec:/sbbs-base/exec\n\n" >> /root/.bashrc
+printf "\n\nPATH=/sbbs-scripts:\$PATH:/sbbs-base/exec\n\n" >> /root/.bashrc
 printf "\n\nSBBSCTRL=/sbbs/ctrl\n" >> /root/.bashrc
 printf "\nTERM=dumb\n" >> /root/.bashrc
 

@@ -53,6 +53,9 @@ while [ "$n" -le "$max" ]; do
 done
 
 #ensure appropriate file permissions are set
+find /sbbs-base -type d -exec chmod 777 {} \;
+find /sbbs-base/exec -type f -exec chmod 777 {} \;
+find /sbbs-scripts -type d -exec chmod 777 {} \;
+find /sbbs-scripts -type f -exec chmod 777 {} \;
 find /sbbs -type d -exec chmod 777 {} \;
 find /sbbs -type f -exec chmod 666 {} \;
-find /sbbs-base/exec -type f -exec chmod 777 {} \;
