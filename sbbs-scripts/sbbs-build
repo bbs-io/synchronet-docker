@@ -19,7 +19,7 @@ apt-get update
 
 
 printf "\n\n---\nInstalling dependencies\n"
-apt-get install -y build-essential cvs zip libnspr4 libnspr4-dev dosemu apt-get install libncurses5-dev libncursesw5-dev
+apt-get install -y build-essential cvs zip libnspr4 libnspr4-dev dosemu libncurses5-dev libncursesw5-dev
 
 mkdir /sbbs
 cd /sbbs
