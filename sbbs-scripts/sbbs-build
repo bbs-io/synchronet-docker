@@ -28,7 +28,7 @@ printf "\n\n---\nDownloading Synchronet Installer Script"
 wget 'http://cvs.synchro.net/cgi-bin/viewcvs.cgi/*checkout*/install/GNUmakefile'
 
 printf "Compiling... this will take a while..."
-make install SBBSDIR=/sbbs USEDOSEMU=1 
+make install USE_DOSEMU=1 SYMLINK=1
 #> ./sbbs-install.log 2> ./sbbs-install-errors.log
 
 printf "\n\nCleanup source files\n\n"
