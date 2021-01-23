@@ -31,6 +31,10 @@ First setup/installation:
 
 NOTE: If you want to re-run full initialization, you should delete `version.txt` from the `/sbbs/ctrl` directory. This will update the `xtrn` and `text` volumes.
 
+### Ports
+
+The `sbbs-service-install` script will not expose/passthrough any ports by default, you should specify any ports you want to pass from the host environment into the container with `-p HOSTPORT:SBBSPORT` ... see: `ctrl/sbbs.ini` and `ctrl/services.ini` for a full list of what ports may be in use.
+
 ## Logs
 
 To view logs, use:
@@ -75,3 +79,13 @@ included in the path inside the container environment.
 
 When a version updates, `text.dat` will be backed up and overwritten with the
 default. You best bet is to replace specific lines in your own modules.
+
+## Additional Notes:
+
+The `references` volume will recieve a fresh copy of `exec`, `docs`, `web` and `text` on install/upgrade. These will make it easier to access materials that are in-container.
+
+The `web` and `text` directories will only be populated if they are empty.
+
+The `xtrl` files will be overwritten from source files on install/upgrade. You may wish to use a different volume mount, or other directory names under xtrn for additional external programs/doors.
+
+When the service runs, or sbbs-init is run, there will be a check/update of a `ctrl/version.txt` file, this is based on the Version from `sbbs -v` so development updates may not automatically update `xtrn` and `ctrl/text.dat`, if need be, delete `ctrl/version.txt`
