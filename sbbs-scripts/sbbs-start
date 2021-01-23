@@ -1,8 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# TODO: Check to see if the SBBS is configured
+set -e
+NAME="Synchronet BBS"
 
-# TODO: If SBBS is configured, start it
+export PATH=$PATH:${SBBSEXEC}
 
-# for now, just loop so the container stays open
-while :; do printf ''; sleep 5; done
+# Change to scripts directory
+cd -P -- "$(dirname -- "$0")"
+
+# Run initialization
+node -r esm init.js
+
+cd ${SBBSCTRL}
+exec /sbbs/exec/sbbs
