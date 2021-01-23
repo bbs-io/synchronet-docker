@@ -54,7 +54,7 @@ async function upgrade({ SBBSXTRN_ORIG, SBBSXTRN, currentVersion }) {
 
 	// other data migrations/upgrades will go here
 	checkDest(`/sbbs/text.orig`, `/sbbs/text/`);
-	checkDest(`/sbbs/web.orig`, `/sbbs/web/`);
+	checkDest(`/sbbs/webv4`, `/sbbs/web/`);
 
 	// Update reference file(s)
 	shell.mkdir('-p', '/sbbs/reference/exec');
@@ -63,8 +63,10 @@ async function upgrade({ SBBSXTRN_ORIG, SBBSXTRN, currentVersion }) {
 	shell.mkdir('-p', '/sbbs/reference/web');
 	shell.cp('-r', `/sbbs/exec/*`, `/sbbs/reference/exec/`);
 	shell.cp('-r', `/sbbs/docs/*`, `/sbbs/reference/docs/`);
+	shell.cp('-r', `/sbbs/ctrl.orig/*`, `/sbbs/reference/ctrl/`);
 	shell.cp('-r', `/sbbs/text.orig/*`, `/sbbs/reference/text/`);
-	shell.cp('-r', `/sbbs/web.orig/*`, `/sbbs/reference/web/`);
+	shell.cp('-r', `/sbbs/web.orig/*`, `/sbbs/reference/web-legacy/`);
+	shell.cp('-r', `/sbbs/webv4/*`, `/sbbs/reference/webv4/`);
 
 	// write current version to version.txt file for upgrade tracking
 	await fsp.writeFile(`/sbbs/ctrl/version.txt`, currentVersion, 'utf8');

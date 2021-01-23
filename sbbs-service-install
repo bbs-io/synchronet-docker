@@ -13,6 +13,7 @@ docker run -d \
   --restart unless-stopped \
   -v $(pwd)/ctrl:/sbbs/ctrl \
   -v $(pwd)/text:/sbbs/text \
+  -v $(pwd)/web:/sbbs/web \
   -v $(pwd)/data:/sbbs/data \
   -v $(pwd)/fido:/sbbs/fido \
   -v $(pwd)/xtrn:/sbbs/xtrn \
