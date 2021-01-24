@@ -9,16 +9,8 @@ fi
 
 # TODO: Copy xtrn.orig files into /sbbs/xtrn as needed
 */
-const getOldVersion = (SBBSCTRL) => fsp.readFile(`/sbbs/ctrl/version.txt`, 'utf8').catch(() => null);
-
-const getCurrentVersion = (SBBSEXEC) => {
-	const { code, stdout, stderr } = shell.exec(`${SBBSEXEC}/sbbs --version`, {silent:true});
-	if (code !== 0) {
-		throw Object.assign(new Error('Unable to determine Synchronet version'), {code, stdout, stderr});
-	}
-	const version = (/Version\s(\S+)/i).exec(stdout)[1].toLowerCase();
-	return version;
-}
+const getOldVersion = () => fsp.readFile(`/sbbs/ctrl/version.txt`, 'utf8').catch(() => null);
+const getCurrentVersion = () => fsp.readFile(`/sbbs/ctrl.orig/version.txt`, 'utf8').catch(() => null);
 
 async function checkCtrl(source, dest) {
 	const hasIniFile = await fsp.stat(`${dest}/sbbs.ini`).then(() => true).catch(() => false);
@@ -38,7 +30,7 @@ async function checkDest(source, dest) {
 	}
 }
 
-async function upgrade({ SBBSXTRN_ORIG, SBBSXTRN, currentVersion }) {
+async function upgrade({ currentVersion }) {
 	const now = new Date().toISOString().replace(/\D/g,'').substr(0,14);
 
 	// backup and replace text.dat file
@@ -84,11 +76,11 @@ async function main() {
 	// Initial check for sbbsctrl
 	await checkCtrl(SBBSCTRL_ORIG, SBBSCTRL);
 
-	const oldVersion = await getOldVersion(SBBSCTRL);
-	const currentVersion = await getCurrentVersion(SBBSEXEC) || 'Unknown';
+	const oldVersion = await getOldVersion();
+	const currentVersion = await getCurrentVersion() || 'Unknown';
 
 	if (!oldVersion || oldVersion !== currentVersion) {
-		await upgrade({ SBBSCTRL_ORIG, SBBSCTRL, SBBSXTRN_ORIG, SBBSXTRN, SBBSEXEC, currentVersion })
+		await upgrade({ currentVersion })
 	}
 
 	// Add read-write permissions for all on volume data
