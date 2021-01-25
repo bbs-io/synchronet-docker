@@ -89,3 +89,5 @@ The `web` and `text` directories will only be populated if they are empty.
 The `xtrl` files will be overwritten from source files on install/upgrade. You may wish to use a different volume mount, or other directory names under xtrn for additional external programs/doors.
 
 When the service runs, or sbbs-init is run, there will be a check/update of a `ctrl/version.txt` file, this is based on the Version from `sbbs -v` so development updates may not automatically update `xtrn` and `ctrl/text.dat`, if need be, delete `ctrl/version.txt`
+
+You may want to run `chmod +rw ~/sbbs` in order to ensure you can read/write the files/directories created by Synchronet at runtime. This is done as part of the initialization at startup.
