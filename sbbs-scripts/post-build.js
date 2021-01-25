@@ -1,11 +1,12 @@
 // import shell from 'shelljs';
 import { promises as fsp } from 'fs';
 
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
 async function main() {
   // Fix Interface binding to IPv4 only - errors in container environment.
   let sbbsini = await fsp.readFile(`/sbbs/ctrl.orig/sbbs.ini`, 'utf8');
-  sbbsini = sbbsini.replace(/\s*Interface\s*=[^\n]+/g, '\n    Interface = 0.0.0.0');
-  sbbsini = sbbsini.replace(/\s*TLSInterface\s*=[^\n]+/g, '\n    TLSInterface = 0.0.0.0');
+  sbbsini = sbbsini.replace(/\n\s+Interface[^\n]+/, '\n    Interface = 0.0.0.0');
   await fsp.writeFile(`/sbbs/ctrl.orig/sbbs.ini`, sbbsini, 'utf8');
 
   // fix interface binding to IPv4 only
@@ -17,6 +18,9 @@ async function main() {
 	let modopts = await fsp.readFile(`/sbbs/ctrl.orig/modopts.ini`, 'utf8');
 	modopts = modopts.replace('../webv4', '../web');
   await fsp.writeFile(`/sbbs/ctrl.orig/modopts.ini`, modopts, 'utf8');
+
+  // let file-io catch up
+  await delay(100);
 }
 
 main().catch(error => {
