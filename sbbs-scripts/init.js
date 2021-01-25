@@ -1,14 +1,6 @@
 import shell from 'shelljs';
 import { promises as fsp } from 'fs';
 
-/*
-if [ ! -e "/sbbs/ctrl/sbbs.ini" ]; then
-	echo "* Installing SBBS ctrl files into /sbbs/ctrl"
-	cp -a /sbbs/ctrl.orig/* /sbbs/ctrl
-fi
-
-# TODO: Copy xtrn.orig files into /sbbs/xtrn as needed
-*/
 const getOldVersion = () => fsp.readFile(`/sbbs/ctrl/version.txt`, 'utf8').catch(() => null);
 const getCurrentVersion = () => fsp.readFile(`/sbbs/ctrl.orig/version.txt`, 'utf8').catch(() => null);
 
@@ -16,7 +8,7 @@ async function checkCtrl(source, dest) {
 	const hasIniFile = await fsp.stat(`${dest}/sbbs.ini`).then(() => true).catch(() => false);
 	if (hasIniFile) return;
 
-	// new install
+	// new install - copy from initial ctrl directory
 	console.log(`Initial install, creating ${dest} from ${source}`);
 	shell.mkdir('-p', dest);
 	shell.cp('-rf', `${source}/*`, dest);
@@ -30,6 +22,17 @@ async function checkDest(source, dest) {
 	}
 }
 
+async function checkXtrn() {
+	// checkDest(`/sbbs/webv4`, `/sbbs/web/`);
+	const dest = await fsp.readdir('/sbbs/xtrn');
+	const list = await fsp.readdir('/sbbs/xtrn.orig');
+	for (const item of list) {
+		if (dest.includes(item)) continue;
+		shell.cp('-r', `/sbbs/xtrn.orig/${item}/`, `/sbbs/xtrn/${item}/`);
+	}
+	shell.cp('-r', `/sbbs/xtrn.orig/3rdp-install/`, `/sbbs/xtrn/3rdp-install/`);
+}
+
 async function upgrade({ currentVersion }) {
 	const now = new Date().toISOString().replace(/\D/g,'').substr(0,14);
 
@@ -41,50 +44,44 @@ async function upgrade({ currentVersion }) {
 		await shell.cp(`/sbbs/ctrl.orig/text.dat`, `/sbbs/ctrl/text.dat`)
 	}
 
-	// Upgrade built in externals/doors -- clobbering, is this safe???
-	shell.cp('-r', `/sbbs/xtrn.orig/*`, `/sbbs/xtrn`);
-
 	// other data migrations/upgrades will go here
 	checkDest(`/sbbs/text.orig`, `/sbbs/text/`);
 	checkDest(`/sbbs/webv4`, `/sbbs/web/`);
+	await checkXtrn();
 
 	// Update reference file(s)
-	shell.mkdir('-p', '/sbbs/reference/exec');
-	shell.mkdir('-p', '/sbbs/reference/docs');
-	shell.mkdir('-p', '/sbbs/reference/text');
-	shell.mkdir('-p', '/sbbs/reference/web');
-	shell.cp('-r', `/sbbs/exec/*`, `/sbbs/reference/exec/`);
-	shell.cp('-r', `/sbbs/docs/*`, `/sbbs/reference/docs/`);
-	shell.cp('-r', `/sbbs/ctrl.orig/*`, `/sbbs/reference/ctrl/`);
-	shell.cp('-r', `/sbbs/text.orig/*`, `/sbbs/reference/text/`);
-	shell.cp('-r', `/sbbs/web.orig/*`, `/sbbs/reference/web-legacy/`);
-	shell.cp('-r', `/sbbs/webv4/*`, `/sbbs/reference/webv4/`);
+	shell.mkdir('-p', '/backup/defaults/exec');
+	shell.mkdir('-p', '/backup/defaults/xtrn');
+	shell.mkdir('-p', '/backup/defaults/docs');
+	shell.mkdir('-p', '/backup/defaults/ctrl');
+	shell.mkdir('-p', '/backup/defaults/text');
+	shell.mkdir('-p', '/backup/defaults/web-runemaster');
+	shell.mkdir('-p', '/backup/defaults/web-ecweb4');
+	shell.cp('-rf', `/sbbs/exec/*`, `/backup/defaults/exec/`);
+	shell.cp('-rf', `/sbbs/xtrn.orig/*`, `/backup/defaults/xtrn/`);
+	shell.cp('-rf', `/sbbs/docs/*`, `/backup/defaults/docs/`);
+	shell.cp('-rf', `/sbbs/ctrl.orig/*`, `/backup/defaults/ctrl/`);
+	shell.cp('-rf', `/sbbs/text.orig/*`, `/backup/defaults/text/`);
+	shell.cp('-rf', `/sbbs/web.orig/*`, `/backup/defaults/web-runemaster/`);
+	shell.cp('-rf', `/sbbs/webv4/*`, `/backup/defaults/web-ecweb4/`);
 
 	// write current version to version.txt file for upgrade tracking
 	await fsp.writeFile(`/sbbs/ctrl/version.txt`, currentVersion, 'utf8');
 }
 
 async function main() {
-	const { 
-		SBBSEXEC='/sbbs/exec',
-		SBBSCTRL_ORIG='/sbbs/ctrl.orig',
-		SBBSCTRL='/sbbs/ctrl',
-		SBBSXTRN_ORIG='/sbbs/xtrn.orig',
-		SBBSXTRN='/sbbs/xtrn',
-	} = process.env;
-
 	// Initial check for sbbsctrl
-	await checkCtrl(SBBSCTRL_ORIG, SBBSCTRL);
+	await checkCtrl('/sbbs/ctrl.orig', '/sbbs/ctrl');
 
 	const oldVersion = await getOldVersion();
 	const currentVersion = await getCurrentVersion() || 'Unknown';
 
-	if (!oldVersion || oldVersion !== currentVersion) {
+	if (oldVersion !== currentVersion) {
 		await upgrade({ currentVersion })
 	}
 
 	// Add read-write permissions for all on volume data
-	shell.chmod('-R', '+rw', '/sbbs/reference');
+	shell.chmod('-R', '+rw', '/backup');
 	shell.chmod('-R', '+rw', '/sbbs/ctrl');
 	shell.chmod('-R', '+rw', '/sbbs/data');
 	shell.chmod('-R', '+rw', '/sbbs/fido');
