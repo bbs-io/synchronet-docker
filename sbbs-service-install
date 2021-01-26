@@ -18,6 +18,7 @@ docker run -d \
   -v $(pwd)/fido:/sbbs/fido \
   -v $(pwd)/xtrn:/sbbs/xtrn \
   -v $(pwd)/mods:/sbbs/mods \
+  -v $(pwd)/nodes:/sbbs/nodes \
   -v $(pwd)/backup:/backup \
   $@ \
   sbbs

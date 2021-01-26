@@ -37,10 +37,15 @@ RUN cd /tmp \
 RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/ctrl/version.txt) \
     && (echo "$(/sbbs/exec/sbbs version)" >> /sbbs/ctrl/version.txt) \
     && cd /sbbs \
+    && cp /sbbs/exec/node /sbbs/exec/sbbsnode \
     && mv /sbbs/ctrl /sbbs/ctrl.orig \
     && mv /sbbs/xtrn /sbbs/xtrn.orig \
     && mv /sbbs/web /sbbs/web.orig \
     && mv /sbbs/text /sbbs/text.orig \
+    && mv /sbbs/node1 /sbbs/node.orig \
+    && rm -rf /sbbs/node2 \
+    && rm -rf /sbbs/node3 \
+    && rm -rf /sbbs/node4 \
     && rm -rf /sbbs/3rdp /sbbs/src /sbbs/repo
 
 # Copy utility scripts and run post-build script
@@ -67,6 +72,6 @@ WORKDIR /sbbs/ctrl
 CMD ["/sbbs/scripts/sbbs-start"]
 
 # Declare expected volume mounts
-VOLUME [ "/sbbs/data","/sbbs/ctrl","/sbbs/text","/sbbs/web","/sbbs/fido","/sbbs/xtrn","/sbbs/mods","/backup" ]
+VOLUME [ "/sbbs/data","/sbbs/ctrl","/sbbs/text","/sbbs/web","/sbbs/fido","/sbbs/xtrn","/sbbs/mods","/sbbs/nodes","/backup" ]
 
 # TODO: Declare ports used

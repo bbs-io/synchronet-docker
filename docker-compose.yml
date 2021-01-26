@@ -16,6 +16,7 @@ services:
       - ~/sbbs/fido:/sbbs/fido
       - ~/sbbs/xtrn:/sbbs/xtrn
       - ~/sbbs/mods:/sbbs/mods
+      - ~/sbbs/nodes:/sbbs/nodes
       - ~/sbbs/backup:/backup
     networks:
       - sbbs

@@ -7,7 +7,6 @@ cd ~/sbbs
 (docker network create -d bridge sbbs > /dev/null 2>&1 || echo '')
 
 docker run --rm -it \
-  --name sbbs \
   --network sbbs \
   -v $(pwd)/ctrl:/sbbs/ctrl \
   -v $(pwd)/text:/sbbs/text \
@@ -16,6 +15,7 @@ docker run --rm -it \
   -v $(pwd)/fido:/sbbs/fido \
   -v $(pwd)/xtrn:/sbbs/xtrn \
   -v $(pwd)/mods:/sbbs/mods \
+  -v $(pwd)/nodes:/sbbs/nodes \
   -v $(pwd)/backup:/backup \
   sbbs \
   $@

@@ -17,6 +17,7 @@ following directories before running `sbbs-init`
 - `~/sbbs/fido`
 - `~/sbbs/xtrn`
 - `~/sbbs/mods`
+- `~/sbbs/nodes` (will re-create on init/run)
 - `~/sbbs/text`
 - `~/sbbs/web`
 

@@ -3,9 +3,11 @@ import { promises as fsp } from 'fs';
 
 const getOldVersion = () => fsp.readFile(`/sbbs/ctrl/version.txt`, 'utf8').catch(() => null);
 const getCurrentVersion = () => fsp.readFile(`/sbbs/ctrl.orig/version.txt`, 'utf8').catch(() => null);
+const exists = filePath => fsp.stat(filePath).then(() => true).catch(() => false);
+const delay = ms => new Promise(r => setTimeout(r, ms));
 
 async function checkCtrl(source, dest) {
-	const hasIniFile = await fsp.stat(`${dest}/sbbs.ini`).then(() => true).catch(() => false);
+	const hasIniFile = await exists(`${dest}/sbbs.ini`);
 	if (hasIniFile) return;
 
 	// new install - copy from initial ctrl directory
@@ -31,6 +33,37 @@ async function checkXtrn() {
 		shell.cp('-r', `/sbbs/xtrn.orig/${item}/`, `/sbbs/xtrn/${item}/`);
 	}
 	shell.cp('-r', `/sbbs/xtrn.orig/3rdp-install/`, `/sbbs/xtrn/3rdp-install/`);
+}
+
+async function checkNode(n) {
+	const nodesDir = `/sbbs/nodes/node${n}/`;
+	const nodeDir = `/sbbs/node${n}/`;
+  if (!(await exists(nodesDir))) {
+		console.log(`Creating ${nodesDir}`);
+		shell.mkdir('-p', nodesDir);
+		shell.cp('-r', '/sbbs/node.orig/*', nodesDir);
+	}
+	if (!(await exists(nodeDir))) {
+		console.log(`Linking ${nodeDir} to ${nodesDir}`);
+		shell.ln('-s', nodesDir, nodeDir);
+	}
+	await delay(10);
+}
+
+// Check that the appropriate number of nodes directories exist, and symlink to 
+// default in-container location.
+async function checkNodes() {
+	await checkNode(1);
+	await fsp.writeFile('/tmp/nodecount.js', `writeln(JSON.stringify({nodes:system.nodes}));`, 'utf8');
+	const {stdout, stderr, code} = shell.exec('jsexec -n /tmp/nodecount.js', { silent:true });
+
+	if (code) throw Object.assign(new Error('Unexpected error'), {stdout, stderr, code});
+	const {nodes} = JSON.parse(stdout);
+	await fsp.unlink('/tmp/nodecount.js');
+
+	for (var i=2; i<=nodes; i++) {
+		await checkNode(i);
+	}
 }
 
 async function upgrade({ currentVersion }) {
@@ -80,13 +113,15 @@ async function main() {
 		await upgrade({ currentVersion })
 	}
 
+	await checkNodes();
+
 	// Add read-write permissions for all on volume data
 	shell.chmod('-R', '+rw', '/backup');
-	shell.chmod('-R', '+rw', '/sbbs/ctrl');
 	shell.chmod('-R', '+rw', '/sbbs/data');
 	shell.chmod('-R', '+rw', '/sbbs/fido');
 	shell.chmod('-R', '+rw', '/sbbs/xtrn');
 	shell.chmod('-R', '+rw', '/sbbs/mods');
+	shell.chmod('-R', '+rw', '/sbbs/nodes');
 	shell.chmod('-R', '+rw', '/sbbs/text');
 	shell.chmod('-R', '+rw', '/sbbs/web');
 }
