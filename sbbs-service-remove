@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Create sbbs network if it doesn't exist
-(docker rm -f sbbs > /dev/null 2>&1 || echo '')
-echo 'Docker container "sbbs" removed.'
-
-# Create sbbs network if it doesn't exist
-(docker network create -d bridge sbbs > /dev/null 2>&1 || echo '')
-echo 'Docker network "sbbs" ready'

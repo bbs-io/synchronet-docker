@@ -42,14 +42,15 @@ RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/ctrl/vers
     && mv /sbbs/xtrn /sbbs/xtrn.orig \
     && mv /sbbs/web /sbbs/web.orig \
     && mv /sbbs/text /sbbs/text.orig \
-    && mv /sbbs/node1 /sbbs/node.orig \
+    && cp -R /sbbs/node1 /sbbs/node.orig \
+    && rm -rf /sbbs/node1 \
     && rm -rf /sbbs/node2 \
     && rm -rf /sbbs/node3 \
     && rm -rf /sbbs/node4 \
     && rm -rf /sbbs/3rdp /sbbs/src /sbbs/repo
 
 # Copy utility scripts and run post-build script
-COPY sbbs-scripts /sbbs/scripts
+COPY docker-container/sbbs/scripts /sbbs/scripts
 RUN cd /sbbs/scripts \
     && chmod +x /sbbs/scripts/sbbs-* \
     && npm ci \

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Change to scripts directory
-cd -P -- "$(dirname -- "$0")"
-docker build -t sbbs .

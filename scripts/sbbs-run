@@ -3,14 +3,21 @@
 mkdir -p ~/sbbs
 cd ~/sbbs
 
+mkdir -p ./ctrl
+mkdir -p ./text
+mkdir -p ./web
+mkdir -p ./data
+mkdir -p ./fido
+mkdir -p ./xtrn
+mkdir -p ./mods
+mkdir -p ./nodes
+mkdir -p ./backup
+
 # Create sbbs network if it doesn't exist
 (docker network create -d bridge sbbs > /dev/null 2>&1 || echo '')
-echo 'Docker network "sbbs" ready'
 
-docker run -d \
-  --name sbbs \
+docker run --rm -it \
   --network sbbs \
-  --restart unless-stopped \
   -v $(pwd)/ctrl:/sbbs/ctrl \
   -v $(pwd)/text:/sbbs/text \
   -v $(pwd)/web:/sbbs/web \
@@ -20,7 +27,6 @@ docker run -d \
   -v $(pwd)/mods:/sbbs/mods \
   -v $(pwd)/nodes:/sbbs/nodes \
   -v $(pwd)/backup:/backup \
-  $@ \
-  sbbs
-
-echo 'Docker container "sbbs" started.'
+  sbbs \
+  sbbs-run \
+  "$@"

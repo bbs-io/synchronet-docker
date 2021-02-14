@@ -4,10 +4,10 @@ services:
     container_name: sbbs
     build:
       context: .
+    image: sbbs
     deploy:
       restart_policy:
         condition: any
-        delay: 3s
     volumes:
       - ~/sbbs/ctrl:/sbbs/ctrl
       - ~/sbbs/text:/sbbs/text
@@ -104,3 +104,4 @@ services:
 
 networks:
   sbbs:
+    name: sbbs
