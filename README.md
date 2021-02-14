@@ -13,7 +13,8 @@ volume container in docker (instructions out of scope).
 ## Installation
 
 Instructions below are using git to clone this repository, but you
-can instead download a zip version and extract directly to `~/sbbs/synchronet-docker` instead.
+can instead download a zip version and extract directly to
+`~/sbbs/synchronet-docker` instead.
 
 ```
 mkdir -p ~/sbbs
@@ -21,7 +22,8 @@ cd ~/sbbs
 git clone https://github.com/bbs-io/synchronet-docker.git synchronet-docker
 ```
 
-Add `~/sbbs/synchronet-docker/scripts` to your `PATH` environment variable, then run:
+Add `~/sbbs/synchronet-docker/scripts` to your `PATH` environment variable,
+then run:
 
 ```
 sbbs-install
@@ -33,12 +35,12 @@ sbbs-install
 - `sbbs-restart` - will stop/start services
 - `sbbs-upgrade` - will build a new sbbs image (latest git version) and start it.
 - `sbbs-run COMMAND ...args` - will create a new temporary container, with volumes mounted, to execute a given command
+- `sbbs-access` - will ensure read-write access to volume containers and related files. (run this if you're having issues editing files/folders under `~/sbbs`)
 
 ### Scripts for running SBBS instance.
 
 The following scripts require that sbbs be installed/running in the `sbbs` docker container.
 
-- `sbbs-access` - will ensure read-write access to volume containers and related files. (run this if you're having issues editing files/folders under `~/sbbs`)
 - `sbbs-exec command ...args` - will run the command and arguments inside the `sbbs` container.
 - `sbbs-scfg` - will run scfg inside the container
 - `sbbs-bash` - will run bash inside the sbbs container
