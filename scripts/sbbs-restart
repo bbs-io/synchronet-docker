@@ -1,4 +1,3 @@
 #!/bin/bash
 
-#cd -P -- "$(dirname -- "$0")/../"
 docker restart sbbs

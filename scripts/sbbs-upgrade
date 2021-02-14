@@ -4,4 +4,4 @@ cd -P -- "$(dirname -- "$0")/../"
 docker-compose build --force-rm --no-cache --pull
 docker-compose up -d
 sleep 3
-./sbbs-access
+./scripts/sbbs-access
