@@ -11,7 +11,6 @@ async function checkCtrl(source, dest) {
 	if (hasIniFile) return;
 
 	// new install - copy from initial ctrl directory
-	// console.log(`Initial install, creating ${dest} from ${source}`);
 	shell.mkdir('-p', dest);
 	shell.cp('-rf', `${source}/*`, dest);
 }
@@ -19,13 +18,11 @@ async function checkCtrl(source, dest) {
 async function checkDest(source, dest) {
 	const files = await fsp.readdir(dest);
 	if (!files.length) {
-		// console.log(`Creating ${dest} from ${source}`);
 		shell.cp('-r', `${source}/*`, dest);
 	}
 }
 
 async function checkXtrn() {
-	// checkDest(`/sbbs/webv4`, `/sbbs/web/`);
 	const dest = await fsp.readdir('/sbbs/xtrn');
 	const list = await fsp.readdir('/sbbs/xtrn.orig');
 	for (const item of list) {
@@ -39,12 +36,10 @@ async function checkNode(n) {
 	const nodesDir = `/sbbs/nodes/node${n}/`;
 	const nodeDir = `/sbbs/node${n}/`;
   if (!(await exists(nodesDir))) {
-		// console.log(`Creating ${nodesDir}`);
 		shell.mkdir('-p', nodesDir);
 		shell.cp('-r', '/sbbs/node.orig/*', nodesDir);
 	}
 	if (!(await exists(nodeDir))) {
-		// console.log(`Linking ${nodeDir} to ${nodesDir}`);
 		shell.ln('-s', nodesDir, nodeDir);
 	}
 	await delay(10);
@@ -101,17 +96,17 @@ async function upgrade({ currentVersion }) {
 }
 
 async function main() {
-	// Initial check for sbbsctrl
-	await checkCtrl('/sbbs/ctrl.orig', '/sbbs/ctrl');
-
 	const oldVersion = await getOldVersion();
 	const currentVersion = await getCurrentVersion() || 'Unknown';
 
-	if (oldVersion !== currentVersion) {
-		await upgrade({ currentVersion })
-	}
-
+	// Initial check for sbbsctrl
+	await checkCtrl('/sbbs/ctrl.orig', '/sbbs/ctrl');
 	await checkNodes();
+
+	if (oldVersion !== currentVersion) {
+		await upgrade({ currentVersion });
+		await delay(1000);
+	}
 }
 
 main()

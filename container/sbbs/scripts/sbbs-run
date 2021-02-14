@@ -3,8 +3,6 @@
 # Change to scripts directory
 cd -P -- "$(dirname -- "$0")"
 
-node -r esm init.js
-
 ./sbbs-init
 cd /sbbs/ctrl
 
