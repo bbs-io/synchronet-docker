@@ -22,8 +22,7 @@ RUN apt-get update \
 FROM BASE as BUILD
 
 # Build Deps
-RUN apt-get update \
-    && apt-get install -yqq libnspr4-dev libncurses5-dev libmozjs185-dev pkgconf \
+RUN apt-get install -yqq libnspr4-dev libncurses5-dev libmozjs185-dev pkgconf \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
