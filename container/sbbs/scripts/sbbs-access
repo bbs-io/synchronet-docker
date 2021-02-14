@@ -1,0 +1,11 @@
+#!/bin/bash
+
+chmod -R a+rwX /backup
+chmod -R a+rwX /sbbs/ctrl
+chmod -R a+rwX /sbbs/data
+chmod -R a+rwX /sbbs/fido
+chmod -R a+rwX /sbbs/xtrn
+chmod -R a+rwX /sbbs/mods
+chmod -R a+rwX /sbbs/nodes
+chmod -R a+rwX /sbbs/text
+chmod -R a+rwX /sbbs/web

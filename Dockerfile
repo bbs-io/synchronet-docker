@@ -50,7 +50,7 @@ RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/ctrl/vers
     && rm -rf /sbbs/3rdp /sbbs/src /sbbs/repo
 
 # Copy utility scripts and run post-build script
-COPY docker-container/sbbs/scripts /sbbs/scripts
+COPY container/sbbs/scripts /sbbs/scripts
 RUN cd /sbbs/scripts \
     && chmod +x /sbbs/scripts/sbbs-* \
     && npm ci \

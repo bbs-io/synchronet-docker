@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+NAME="Synchronet BBS"
+
+export PATH=$PATH:${SBBSEXEC}
+
+# Change to scripts directory
+cd -P -- "$(dirname -- "$0")"
+
+# Run initialization
+./sbbs-init
+
+cd ${SBBSCTRL}
+exec /sbbs/exec/sbbs
