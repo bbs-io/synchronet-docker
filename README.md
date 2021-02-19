@@ -45,14 +45,14 @@ synchronet install
 - `synchronet init` - Initialize Setup - does not install container (creates `~/sbbs/*`)
 - `synchronet install` - Initialize and install/upgrade container
 - `synchronet uninstall` - Uninstall container - does not clear ~/sbbs
-- `synchronet run COMMAND ...args` - Run command inside a temporary container
+- `synchronet run PROGRAM [...args]` - Run command inside a temporary container
 - `synchronet access` - Fix file permissions for `~/sbbs/*`. Do this before editing content.
 
 ### Runtime Commands
 
 The following commands require that sbbs be installed/running in the `sbbs` docker container.
 
-- `synchronet exec command ...args` - Run a command inside the installed container
+- `synchronet exec PROGRAM [...args]` - Run a command inside the installed container
 - `synchronet scfg` - Load scfg
 - `synchronet bash` - Bash prompt in container
 - `synchronet dos` - (TODO) DOSEMU prompt in container

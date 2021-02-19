@@ -16,7 +16,7 @@ Management Commands:
   uninstall   Uninstall container - does not clear ~/sbbs
   run         Run command inside a temporary container
                 ex: sbbs run bash
-                    sbbs run ls /sbbs/ctrl
+                    sbbs run bash -c "ls /sbbs/ctrl"
   access      Fix file permissions for ~/sbbs/*
                 Do this before editing content.
 
