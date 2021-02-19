@@ -1,6 +1,6 @@
 {
-  "name": "docker",
-  "version": "0.0.0",
+  "name": "@bbs/synchronet",
+  "version": "0.1.2",
   "description": "Synchronet BBS Software - Dockerized",
   "keywords": [
     "bbs",

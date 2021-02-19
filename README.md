@@ -4,6 +4,10 @@ This is meant to be run from a unix-like (bash) environment.
 
 Docker and a recent Docker Compose version should be installed.
 
+## IN PROGRESS
+
+This is a work in progress, I've manually published to docker up for `bbsio/synchronet` for the container, as well as have manually published version 0.1.0 to npm for `@bbs/synchronet` npm package.
+
 ### Windows
 
 If you are using Windows, you should install WSL2, and use Docker
@@ -31,7 +35,7 @@ you should have docker and docker-compose installed in order to run this package
 The container name will be `sbbs` and the image will be `bbsio/synchronet:local`
 
 ```
-npm i -g bbs/synchronet
+npm i -g @bbs/synchronet
 synchronet install
 ```
 

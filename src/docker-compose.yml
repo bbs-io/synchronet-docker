@@ -1,16 +1,18 @@
+# This will by copied to ~/sbbs/docker-compose.yml
+#
+# It will be used in order to customize the running
+# and installation options.
+#
+# In order to customize before first install
+# run:
+#    sbbs preinstall
 version: "3.8"
 services:
   sbbs:
     container_name: sbbs
 
-    # -- LOCAL BUILD ----------------------------
-    build:
-      context: ./docker
-    image: bbsio/synchronet:local
-    # -------------------------------------------
-
     # -- LATEST PREBUILT ------------------------
-    # image: bbsio/synchronet:latest
+    image: bbsio/synchronet:latest
     # -------------------------------------------
 
     # -- NIGHTLY --------------------------------
