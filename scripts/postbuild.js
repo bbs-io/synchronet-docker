@@ -11,3 +11,8 @@ fs.writeFileSync(
   JSON.stringify(pkg, null, 2),
   "utf8"
 );
+
+fs.copyFileSync(
+  `${__dirname}/../src/docker-compose.yml`,
+  `${__dirname}/../dist/docker-compose.yml`
+);
