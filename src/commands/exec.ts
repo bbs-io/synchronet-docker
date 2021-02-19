@@ -1,5 +1,6 @@
 import exec from "../utils/exec";
 import isRunning from "../utils/is-sbbs-running";
+import resetAccess from "./access";
 
 export default async (...args: string[]) => {
   if (!isRunning) {
@@ -8,4 +9,5 @@ export default async (...args: string[]) => {
   }
   if (!args.length) return;
   await exec(`docker exec -it sbbs ${args.map((a) => `"${a}"`).join(" ")}`);
+  await resetAccess();
 };

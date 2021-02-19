@@ -2,11 +2,26 @@
 
 This is meant to be run from a unix-like (bash) environment.
 
-Docker and a recent Docker Compose version should be installed.
+This package will use `~/sbbs` as the base for data/configuration.
 
 ## IN PROGRESS
 
 This is a work in progress, I've manually published to docker up for `bbsio/synchronet` for the container, as well as have manually published version 0.1.0 to npm for `@bbs/synchronet` npm package.
+
+## Installation
+
+You must have the following installed in order to run this application.
+
+- Docker
+- Docker Compose
+- [Node.js](https://nodejs.org/en/) _(14.x)_
+
+The container name will be `sbbs` and the image will be `bbsio/synchronet:latest`
+
+```
+npm i -g @bbs/synchronet
+synchronet install
+```
 
 ### Windows
 
@@ -19,25 +34,9 @@ from a WSL2 linux environment such as Ubuntu 20.04.
 If you are using mac, you should modify the dockerfile to use a
 volume container in docker (instructions out of scope).
 
-## Installation
-
 ### docker-compose
 
 If you wish to use `docker-compose` refer to [docker-compose.md](./docker-compose.md)
-
-### npm
-
-You will need a recent LTS version of [Node.js](https://nodejs.org/en/) _(14.x)_ installed in order to use the npm package.
-
-This package will use `~/sbbs` as the base for volume mounts. As stated above
-you should have docker and docker-compose installed in order to run this package.
-
-The container name will be `sbbs` and the image will be `bbsio/synchronet:local`
-
-```
-npm i -g @bbs/synchronet
-synchronet install
-```
 
 ## Management Commands
 
@@ -56,6 +55,18 @@ The following commands require that sbbs be installed/running in the `sbbs` dock
 - `synchronet scfg` - Load scfg
 - `synchronet bash` - Bash prompt in container
 - `synchronet dos` - (TODO) DOSEMU prompt in container
+- `synchronet logs [OPTIONS]` - See below
+
+### Logs
+
+Options:
+
+- `--details` - Show extra details provided to logs
+- `-f`, `--follow` - Follow log output
+- `--since TIME` - Show logs since timestamp (e.g. 2013-01-02T13:23:37Z) or relative (e.g. 42m for 42 minutes)
+- `-n NUM`, `--tail NUM` - Number of lines to show from the end of the logs (default "all")
+- `-t`, `--timestamps` - Show timestamps
+- `--until TIME` - Show logs before a timestamp (e.g. 2013-01-02T13:23:37Z) or relative (e.g. 42m for 42 minutes)
 
 ## Directories
 

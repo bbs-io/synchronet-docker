@@ -3,6 +3,7 @@ import install from "./commands/install";
 import uninstall from "./commands/uninstall";
 import run from "./commands/run";
 import access from "./commands/access";
+import logs from "./commands/logs";
 import exec from "./commands/exec";
 import scfg from "./commands/scfg";
 import bash from "./commands/bash";
@@ -22,6 +23,8 @@ export default async () => {
       return run(...args);
     case "access":
       return access();
+    case "logs":
+      return logs(...args);
     case "exec":
       return exec(...args);
     case "scfg":

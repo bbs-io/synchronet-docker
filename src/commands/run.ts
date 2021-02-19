@@ -2,6 +2,7 @@ import ensureDirs from "../utils/ensure-sbbsdirs";
 import sbbsdir from "../utils/sbbsdir";
 import getImageName from "../utils/get-image-name";
 import exec from "../utils/exec";
+import resetAccess from "./access";
 
 export default async (...args: string[]) => {
   const image = await getImageName();
@@ -28,4 +29,5 @@ export default async (...args: string[]) => {
     .replace(/[\r\n\s+]/g, " ");
 
   await exec(cmd);
+  await resetAccess();
 };
