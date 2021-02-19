@@ -27,6 +27,6 @@ docker run --rm -it \
   -v $(pwd)/mods:/sbbs/mods \
   -v $(pwd)/nodes:/sbbs/nodes \
   -v $(pwd)/backup:/backup \
-  sbbs \
+  bbsio/synchronet:local \
   sbbs-run \
   "$@"

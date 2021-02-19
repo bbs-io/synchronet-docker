@@ -50,7 +50,7 @@ RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/ctrl/vers
     && rm -rf /sbbs/3rdp /sbbs/src /sbbs/repo
 
 # Copy utility scripts and run post-build script
-COPY container/sbbs/scripts /sbbs/scripts
+COPY scripts /sbbs/scripts
 RUN cd /sbbs/scripts \
     && chmod +x /sbbs/scripts/sbbs-* \
     && npm ci \
@@ -74,5 +74,3 @@ CMD ["/sbbs/scripts/sbbs-start"]
 
 # Declare expected volume mounts
 VOLUME [ "/sbbs/data","/sbbs/ctrl","/sbbs/text","/sbbs/web","/sbbs/fido","/sbbs/xtrn","/sbbs/mods","/sbbs/nodes","/backup" ]
-
-# TODO: Declare ports used

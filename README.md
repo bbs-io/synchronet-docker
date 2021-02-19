@@ -3,49 +3,56 @@
 This is meant to be run from a unix-like (bash) environment.
 
 Docker and a recent Docker Compose version should be installed.
+
+### Windows
+
 If you are using Windows, you should install WSL2, and use Docker
 Desktop configured to use WSL2, and it would be best to run this
 from a WSL2 linux environment such as Ubuntu 20.04.
+
+### Mac
 
 If you are using mac, you should modify the dockerfile to use a
 volume container in docker (instructions out of scope).
 
 ## Installation
 
-Instructions below are using git to clone this repository, but you
-can instead download a zip version and extract directly to
-`~/sbbs/synchronet-docker` instead.
+### docker-compose
+
+If you wish to use `docker-compose` refer to [docker-compose.md](./docker-compose.md)
+
+### npm
+
+You will need a recent LTS version of [Node.js](https://nodejs.org/en/) _(14.x)_ installed in order to use the npm package.
+
+This package will use `~/sbbs` as the base for volume mounts. As stated above
+you should have docker and docker-compose installed in order to run this package.
+
+The container name will be `sbbs` and the image will be `bbsio/synchronet:local`
 
 ```
-mkdir -p ~/sbbs
-cd ~/sbbs
-git clone https://github.com/bbs-io/synchronet-docker.git synchronet-docker
+npm i -g bbs/synchronet
+synchronet install
 ```
 
-Add `~/sbbs/synchronet-docker/scripts` to your `PATH` environment variable,
-then run:
+## Management Commands
 
-```
-sbbs-install
-```
+- `synchronet help` - Display Help
+- `synchronet init` - Initialize Setup - does not install container (creates `~/sbbs/*`)
+- `synchronet install` - Initialize and install/upgrade container
+- `synchronet uninstall` - Uninstall container - does not clear ~/sbbs
+- `synchronet run COMMAND ...args` - Run command inside a temporary container
+- `synchronet access` - Fix file permissions for `~/sbbs/*`. Do this before editing content.
 
-## Scripts
+### Runtime Commands
 
-- `sbbs-install` - will run docker-compose to create the instance, this will initialize the `~/sbbs/*` directories as volume mounts.
-- `sbbs-restart` - will stop/start services
-- `sbbs-upgrade` - will build a new sbbs image (latest git version) and start it.
-- `sbbs-run COMMAND ...args` - will create a new temporary container, with volumes mounted, to execute a given command
-- `sbbs-access` - will ensure read-write access to volume containers and related files. (run this if you're having issues editing files/folders under `~/sbbs`)
+The following commands require that sbbs be installed/running in the `sbbs` docker container.
 
-### Scripts for running SBBS instance.
-
-The following scripts require that sbbs be installed/running in the `sbbs` docker container.
-
-- `sbbs-exec command ...args` - will run the command and arguments inside the `sbbs` container.
-- `sbbs-scfg` - will run scfg inside the container
-- `sbbs-bash` - will run bash inside the sbbs container
-- `sbbs-dos` (TODO) - will run DOSEMU with the appropriate directories mounted. This will help enable you to setup/configure DOS based doors.
+- `synchronet exec command ...args` - Run a command inside the installed container
+- `synchronet scfg` - Load scfg
+- `synchronet bash` - Bash prompt in container
+- `synchronet dos` - (TODO) DOSEMU prompt in container
 
 ## Directories
 
-NOTE: Volume mounted directories will be owned by root as a default. In order to edit/update these files, you should run `sbbs-access` with the `sbbs` container running
+NOTE: Volume mounted directories will be owned by root as a default. In order to edit/update these files, you should run `synchronet access` with the `sbbs` container running.
