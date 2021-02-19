@@ -3,7 +3,7 @@ import exec from "../utils/exec";
 import sbbsdir from "../utils/sbbsdir";
 
 export default async () => {
-  if (!(await fs.existsSync(sbbsdir))) return;
+  if (!(await fs.existsSync(`${sbbsdir}/docker-compose.yml`))) return;
   process.chdir(sbbsdir);
   exec("docker-compose down -v -t 3");
 };
