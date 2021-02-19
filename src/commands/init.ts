@@ -5,6 +5,7 @@ import sbbsdir from "../utils/sbbsdir";
 import resetAccess from "./access";
 import getImageName from "../utils/get-image-name";
 import isRunning from "../utils/is-sbbs-running";
+import ensureDirs from "../utils/ensure-sbbsdirs";
 import run from "./run";
 
 export default async () => {
@@ -26,8 +27,10 @@ export default async () => {
   if (!(await isRunning())) {
     // is there a container running
     // no - run sbbs-init, then run access again
+    console.log("Initializing ~/sbbs");
     const imgName = await getImageName();
     await docker(`pull ${imgName}`);
+    await ensureDirs();
     await run(`sbbs-init`);
     await await resetAccess();
   }

@@ -19,11 +19,11 @@ export default async () => {
     case "uninstall":
       return uninstall();
     case "run":
-      return run();
+      return run(...args);
     case "access":
       return access();
     case "exec":
-      return exec();
+      return exec(...args);
     case "scfg":
       return scfg();
     case "bash":

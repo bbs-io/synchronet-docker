@@ -9,7 +9,6 @@ import sbbsdir from "../utils/sbbsdir";
 
 export default async () => {
   if (!fs.existsSync(sbbsdir)) return;
-  await mkdirp(sbbsdir);
   await docker(
     `run -i --rm -v "${sbbsdir}:/sbbs" node:14 bash -c "chmod -R a+rwX /sbbs"`
   );

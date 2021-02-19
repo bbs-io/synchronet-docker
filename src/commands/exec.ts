@@ -1,4 +1,4 @@
-import docker from "@tracker1/docker-cli";
+import exec from "../utils/exec";
 import isRunning from "../utils/is-sbbs-running";
 
 export default async (...args: string[]) => {
@@ -6,5 +6,6 @@ export default async (...args: string[]) => {
     console.error("sbbs is not running");
     process.exit(1);
   }
-  await docker(`exec sbbs ${args.map((a) => `"${a}"`).join(" ")}`);
+  if (!args.length) return;
+  await exec(`docker exec -it sbbs ${args.map((a) => `"${a}"`).join(" ")}`);
 };
