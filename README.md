@@ -1,78 +1,133 @@
 # Synchronet Dockerized
 
-This is meant to be run from a unix-like (bash) environment.
+This repository is meant to build/push to [bbsio/synchronet on Docker Hub](https://hub.docker.com/repository/docker/bbsio/synchronet).
 
-This package will use `~/sbbs` as the base for data/configuration.
+For the `@bbs/synchronet` utility, [click here](https://github.com/bbs-io/synchronet-docker-util)
 
-## IN PROGRESS
+**[Synchronet](http://wiki.synchro.net/)** is built from _[source](https://gitlab.synchro.net/main/sbbs)_ via _[bbs-io/synchronet-docker on github](https://github.com/bbs-io/synchronet-docker)_.
 
-This is a work in progress, I've manually published to docker up for `bbsio/synchronet` for the container, as well as have manually published version 0.1.0 to npm for `@bbs/synchronet` npm package.
+### Windows Users
 
-## Installation
+If you are running Windows, it is recommended that you first install WSL2, then Docker Desktop, configured for WSL2 and doing your volume mounts from inside WSL2 (such as with Ubuntu). VS Code with WSL Remote extension will make editing much easier to work with. Note: you can access your WSL2 instances in explorer via `\\wsl$`. You may want to add your SBBS volume directory to your Quick access shortcuts.
 
-You must have the following installed in order to run this application.
+## Running
 
-- Docker
-- Docker Compose
-- [Node.js](https://nodejs.org/en/) _(14.x)_
+You can reference the [docker-compose.yml](./docker-compose.yml) or use the [@bbs/synchronet](https://github.com/bbs-io/synchronet-docker-util) via npm.
 
-The container name will be `sbbs` and the image will be `bbsio/synchronet:latest`
+### First run/install
+
+For your first time running Synchronet (fresh install), you should prepare the directories for volume mounting.
 
 ```
-npm i -g @bbs/synchronet
-synchronet install
+sudo mkdir -p /sbbs/backup
+sudo mkdir -p /sbbs/ctrl
+sudo mkdir -p /sbbs/text
+sudo mkdir -p /sbbs/web
+sudo mkdir -p /sbbs/data
+sudo mkdir -p /sbbs/fido
+sudo mkdir -p /sbbs/xtrn
+sudo mkdir -p /sbbs/mods
+sudo mkdir -p /sbbs/nodes
+sudo chmod a+rwX /sbbs
 ```
 
-### Windows
+### Pulling updates
 
-If you are using Windows, you should install WSL2, and use Docker
-Desktop configured to use WSL2, and it would be best to run this
-from a WSL2 linux environment such as Ubuntu 20.04.
+If upgrading from a previous run, you should pull the latest release.
 
-### Mac
+```
+docker pull bbsio/synchronet:latest
+```
 
-If you are using mac, you should modify the dockerfile to use a
-volume container in docker (instructions out of scope).
+### Running Synchronet
 
-### docker-compose
+From here, you can start sbbs:
 
-If you wish to use `docker-compose` refer to [docker-compose.md](./docker-compose.md)
+```
+docker run -d --restart=unless-stopped \
+  --name sbbs \
+  -h sbbs \
+  -v /sbbs/backup:/backup
+  -v /sbbs/ctrl:/sbbs/ctrl
+  -v /sbbs/text:/sbbs/text
+  -v /sbbs/web:/sbbs/web
+  -v /sbbs/data:/sbbs/data
+  -v /sbbs/fido:/sbbs/fido
+  -v /sbbs/xtrn:/sbbs/xtrn
+  -v /sbbs/mods:/sbbs/mods
+  -v /sbbs/nodes:/sbbs/nodes
+  bbsio/synchronet:latest
+```
 
-## Management Commands
+## Shutting Down
 
-- `synchronet help` - Display Help
-- `synchronet init` - Initialize Setup - does not install container (creates `~/sbbs/*`)
-- `synchronet install` - Initialize and install/upgrade container
-- `synchronet uninstall` - Uninstall container - does not clear ~/sbbs
-- `synchronet run PROGRAM [...args]` - Run command inside a temporary container
-- `synchronet access` - Fix file permissions for `~/sbbs/*`. Do this before editing content.
-- `synchronet doorparty` - Install Doorparty Connector and Doors
+To shut down and remove an existing instance, such as before running a new version.
 
-### Runtime Commands
+```
+docker rm --force sbbs
+```
 
-The following commands require that sbbs be installed/running in the `sbbs` docker container.
+## Editing Content
 
-- `synchronet exec PROGRAM [...args]` - Run a command inside the installed container
-- `synchronet scfg` - Load scfg
-- `synchronet bash` - Bash prompt in container
-- `synchronet dos` - (TODO) DOSEMU prompt in container
-- `synchronet logs [OPTIONS]` - See below
+If you are wanting to edit/update files, you may want to run the following on your common shared path, as files are created as root within the container.
 
-### Logs
+```
+sudo chmod a+rwX /sbbs
+```
 
-Options:
+alternatively:
 
-- `--details` - Show extra details provided to logs
-- `-f`, `--follow` - Follow log output
-- `--since TIME` - Show logs since timestamp (e.g. 2013-01-02T13:23:37Z) or relative (e.g. 42m for 42 minutes)
-- `-n NUM`, `--tail NUM` - Number of lines to show from the end of the logs (default "all")
-- `-t`, `--timestamps` - Show timestamps
-- `--until TIME` - Show logs before a timestamp (e.g. 2013-01-02T13:23:37Z) or relative (e.g. 42m for 42 minutes)
+```
+docker exec -it sbbs sbbs-access
+```
 
-## Directories
+## Volumes
 
-NOTE: Volume mounted directories will be owned by root as a default. In order to edit/update these files, you should run `synchronet access` with the `sbbs` container running.
+In order to better support portability, the following volume mounts are expected. Most directories will be populated on first run.
 
-## Advanced Setup
+- `/backup` - location in order to generate/create backup scripts inside the container.
+  - `/defaults` - updated on first run, or updated versions, will container default directories from `/sbbs/` for reference.
+- `/sbbs/ctrl` - note: `text.dat` will be overwritten on updated versions.
+- `/sbbs/text`
+- `/sbbs/web` - not populated, copy files from `/backup/defaults/web-ecweb4` or `/backup/defaults/web-runemaster`
+- `/sbbs/data`
+- `/sbbs/fido`
+- `/sbbs/xtrn` - external programs, will populate directories that don't exist on first run or update
+- `/sbbs/mods` - your customizations, empty by default
+- `/sbbs/nodes` - shared nodes directory, not required if a single host is used.
 
-If you wish to use a directory other than `~/sbbs` for your volume/directory mounts, set an `SBBSDIR` environment variable to your desired location, for example, if you wanted to use `/sbbs` on a deployed server, you could do so.
+## Ports
+
+Synchronet is preconfigured for the following services/ports, see `/sbbs/ctrl/sbbs.ini` and `/sbbs/ctrl/services.ini` for additional configuration.
+
+- `80` - http
+- `443` - https
+- `1123` - ws-term - used for ftelnet virtual terminal web connections
+- `11235` - wss-term - used for ftelnet virtual terminal web connections
+- `21` - ftp
+- `22`- ssh
+- `23` - telnet
+- `513`- rlogin
+- `64` - petscii 40-column
+- `128` - petscii 128-column
+- `25` - smtp-mail
+- `587` - smtp-submit
+- `465` - smtp-submit+tls
+- `110` - pop3
+- `995` - pop3+tls
+- `119` - nntp
+- `563` - nntps
+- `18` - message send prot
+- `11` - active user svc
+- `17` - qotd
+- `79` - finger
+- `6667` - irc
+
+Other services/ports that may be enabled:
+
+- `5500` - hotline
+- `5501` - hotline-trans
+- `24554` - binkp
+- `24553` - binkps
+- `143` - imap
+- `993` - imap+tls

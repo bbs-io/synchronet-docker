@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd -P -- "$(dirname -- "$0")/../"
-docker-compose down -t 2 --rmi all --remove-orphans -v

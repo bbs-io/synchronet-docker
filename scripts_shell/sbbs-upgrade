@@ -1,7 +1,0 @@
-#!/bin/bash
-
-cd -P -- "$(dirname -- "$0")/../"
-docker-compose build --force-rm --no-cache --pull
-docker-compose up -d
-sleep 3
-./scripts/sbbs-access
