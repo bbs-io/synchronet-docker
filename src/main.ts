@@ -9,6 +9,7 @@ import scfg from "./commands/scfg";
 import bash from "./commands/bash";
 import dos from "./commands/dos";
 import help from "./commands/help";
+import doorparty from "./commands/doorparty";
 
 export default async () => {
   const [command, ...args] = process.argv.slice(2);
@@ -33,6 +34,8 @@ export default async () => {
       return bash();
     case "dos":
       return dos();
+    case "doorparty":
+      return doorparty();
   }
   return help();
 };

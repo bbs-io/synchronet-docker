@@ -5,7 +5,7 @@
 #
 # In order to customize before first install
 # run:
-#    sbbs preinstall
+#    sbbs init
 version: "3.8"
 services:
   sbbs:
@@ -67,59 +67,6 @@ services:
       # - 24553:24553 #binkps
       # - 143:143 #imap
       # - 993:993 #imap+tls
-  # sbbs_irc:
-  #   container_name: sbbs_irc
-  #   build:
-  #     context: .
-  #   deploy:
-  #     restart_policy:
-  #       condition: any
-  #       delay: 3s
-  #   volumes:
-  #     - ~/sbbs/ctrl:/sbbs/ctrl
-  #     - ~/sbbs/text:/sbbs/text
-  #     - ~/sbbs/data:/sbbs/data
-  #     - ~/sbbs/mods:/sbbs/mods
-  #   command: jsexec /sbbs/exec/ircd.js
-  #   ports:
-  #     - 6667:6667
-  # sbbs_ecweb:
-  #   container_name: sbbs_ecweb
-  #   build:
-  #     context: .
-  #   deploy:
-  #     restart_policy:
-  #       condition: any
-  #       delay: 3s
-  #   volumes:
-  #     - ~/sbbs/ctrl:/sbbs/ctrl
-  #     - ~/sbbs/text:/sbbs/text
-  #     - ~/sbbs/data:/sbbs/data
-  #     - ~/sbbs/mods:/sbbs/mods
-  #     - ~/sbbs/web-ecweb4:/sbbs/web
-  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- ~/sbbs/ctrl/sbbs.web-ecweb4.ini"
-  #   ports:
-  #     - 51080:80
-  #     - 51443:443
-  # sbbs_rmweb:
-  #   container_name: sbbs_rmweb
-  #   build:
-  #     context: .
-  #   deploy:
-  #     restart_policy:
-  #       condition: any
-  #       delay: 3s
-  #   volumes:
-  #     - ~/sbbs/ctrl:/sbbs/ctrl
-  #     - ~/sbbs/text:/sbbs/text
-  #     - ~/sbbs/data:/sbbs/data
-  #     - ~/sbbs/mods:/sbbs/mods
-  #     - ~/sbbs/web-runemaster:/sbbs/web
-  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- ~/sbbs/ctrl/sbbs.web-runemaster.ini"
-  #   ports:
-  #     - 52080:80
-  #     - 52443:443
-
 networks:
   sbbs:
     name: sbbs

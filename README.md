@@ -46,6 +46,7 @@ If you wish to use `docker-compose` refer to [docker-compose.md](./docker-compos
 - `synchronet uninstall` - Uninstall container - does not clear ~/sbbs
 - `synchronet run PROGRAM [...args]` - Run command inside a temporary container
 - `synchronet access` - Fix file permissions for `~/sbbs/*`. Do this before editing content.
+- `synchronet doorparty` - Install Doorparty Connector and Doors
 
 ### Runtime Commands
 
@@ -71,3 +72,7 @@ Options:
 ## Directories
 
 NOTE: Volume mounted directories will be owned by root as a default. In order to edit/update these files, you should run `synchronet access` with the `sbbs` container running.
+
+## Advanced Setup
+
+If you wish to use a directory other than `~/sbbs` for your volume/directory mounts, set an `SBBSDIR` environment variable to your desired location, for example, if you wanted to use `/sbbs` on a deployed server, you could do so.

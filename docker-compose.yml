@@ -117,6 +117,37 @@ services:
   #   ports:
   #     - 52080:80
   #     - 52443:443
+  #
+  # # Door Party Connector
+  # #
+  # # Save: ~/sbbs/mods/doorparty.js
+  # #       https://raw.githubusercontent.com/bbs-io/doorparty-connector-docker/master/synchronet/doorparty.js
+  # #
+  # # Add the following to modopts.ini (optional)
+  # #
+  # #   [doorparty]
+  # #   tunnel_host=doorparty
+  # #   tunnel_port=9999
+  # #
+  # doorparty_connector:
+  #   hostname: doorparty
+  #   container_name: doorparty_connector
+  #   image: bbsio/doorparty
+  #   environment:
+  #     - SSH_USERNAME=TODO
+  #     - SSH_PASSWORD=TODO
+  #     - SYSTEM_TAG=[TODO]
+  #     - LOCAL_INTERFACE=0.0.0.0
+  #     - LOCAL_PORT=9999
+  #     - SSH_HOST=dp.throwbackbbs.com
+  #     - SSH_PORT=2022
+  #     - RLOGIN_HOST=dp.throwbackbbs.com
+  #     - RLOGIN_PORT=513
+  #   deploy:
+  #     restart_policy:
+  #       condition: any
+  #   networks:
+  #     - sbbs
 
 networks:
   sbbs:

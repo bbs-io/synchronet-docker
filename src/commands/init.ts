@@ -19,7 +19,7 @@ export default async () => {
   process.chdir(sbbsdir);
   if (!fs.existsSync(`${sbbsdir}/docker-compose.yml`)) {
     await fs.copyFileSync(
-      `${__dirname}/../docker-compose.yml`,
+      `${__dirname}/../_res/docker-compose.yml`,
       `${sbbsdir}/docker-compose.yml`
     );
   }
