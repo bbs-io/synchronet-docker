@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "version": "1.0.0",
+  "license": "ISC",
+  "dependencies": {
+    "azure-storage": "^2.10.3",
+    "cheerio": "^1.0.0-rc.5",
+    "esm": "^3.2.25",
+    "node-fetch": "^2.6.1",
+    "shelljs": "^0.8.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node -r esm index.js"
+  }
+}

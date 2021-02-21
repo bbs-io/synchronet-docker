@@ -11,6 +11,7 @@ RUN apt-get update \
     curl wget procps less zip unzip arj unrar-free \
     lhasa arc zoo logrotate libmozjs185-1.0 cron \
     dosemu build-essential git apt-utils nano \
+    libcap2-bin \
     && cd /tmp \
     && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
     && git config --global core.autocrlf false \
@@ -21,6 +22,11 @@ RUN apt-get update \
 #Build Stage
 FROM BASE as BUILD
 
+ARG TAGNAME=master
+
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+
 # Build Deps
 RUN apt-get update \
     && apt-get install -yqq libnspr4-dev libncurses5-dev libmozjs185-dev pkgconf \
@@ -28,16 +34,27 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Build Synchronet - capture hash and version
-ENV SBBSCTRL=/sbbs/ctrl
-RUN cd /tmp \
-    && wget https://gitlab.synchro.net/main/sbbs/-/raw/master/install/GNUmakefile \
+# Work around build bug trying to run sudo
+RUN echo '#!/bin/bash\n"$@"' > /bin/sudo && chmod +x /bin/sudo
+
+WORKDIR /sbbs/repo
+
+# Shallow git for specific tag/commit/branch
+RUN git init \
+    && git remote add origin https://gitlab.synchro.net/main/sbbs.git \
+    && git fetch --depth 1 origin $TAGNAME \
+    && git checkout FETCH_HEAD
+
+# Build Synchronet
+RUN cd ./install \
+    && sed -i.bak '/git/d' ./GNUmakefile \
     && make RELEASE=1 USE_DOSEMU=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
 
-RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/ctrl/version.txt) \
-    && (echo "$(/sbbs/exec/sbbs version)" >> /sbbs/ctrl/version.txt) \
-    && cd /sbbs \
-    && cp /sbbs/exec/node /sbbs/exec/sbbsnode \
+# capture hash and version
+RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/exec/version.txt) \
+    && (echo "$(/sbbs/exec/sbbs version)" >> /sbbs/exec/version.txt)
+
+RUN mv /sbbs/exec/node /sbbs/exec/sbbsnode \
     && mv /sbbs/ctrl /sbbs/ctrl.orig \
     && mv /sbbs/xtrn /sbbs/xtrn.orig \
     && mv /sbbs/web /sbbs/web.orig \
@@ -74,3 +91,6 @@ CMD ["/sbbs/scripts/sbbs-start"]
 
 # Declare expected volume mounts
 VOLUME [ "/sbbs/data","/sbbs/ctrl","/sbbs/text","/sbbs/web","/sbbs/fido","/sbbs/xtrn","/sbbs/mods","/sbbs/nodes","/backup" ]
+
+# Show version built
+RUN cat /sbbs/exec/version.txt && echo ""
