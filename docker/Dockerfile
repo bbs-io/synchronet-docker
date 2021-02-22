@@ -1,6 +1,17 @@
 # NAME bbs-io/synchronet
 # VERSION 3.18
 
+# BUILD ARGS
+#   docker build --build-arg NAME=VALUE ...
+#
+#   REPURL
+#       default: github mirror, which should be faster in build environment
+#       upstream: use https://gitlab.synchro.net/main/sbbs.git
+#   TAGNAME = specific tag/commit/branch to build from
+#       default: master - latest nightly for default REPOURL above
+#       release*: latest release from synchronet-version-reference.json
+#       nightly*: latest nightly from synchronet-version-reference.json
+
 # Using node-stretch as baseline, to be able to use node based scripts.
 FROM node:14-stretch as BASE
 
@@ -11,7 +22,7 @@ RUN apt-get update \
     curl wget procps less zip unzip arj unrar-free \
     lhasa arc zoo logrotate libmozjs185-1.0 cron \
     dosemu build-essential git apt-utils nano \
-    libcap2-bin \
+    libcap2-bin sudo \
     && cd /tmp \
     && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
     && git config --global core.autocrlf false \
@@ -21,8 +32,6 @@ RUN apt-get update \
 
 #Build Stage
 FROM BASE as BUILD
-
-ARG TAGNAME=master
 
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
@@ -34,16 +43,24 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Work around build bug trying to run sudo
-RUN echo '#!/bin/bash\n"$@"' > /bin/sudo && chmod +x /bin/sudo
+# Prepare scripts directory
+WORKDIR /sbbs/scripts
+COPY ./synchronet-version-reference.json /sbbs/synchronet-version-reference.json
+COPY ./scripts .
+RUN npm ci \
+    && chmod +x /sbbs/scripts/sbbs-*
 
+# Shallow git checkout, adjusts TAGNAME for "nightly" or "release"
 WORKDIR /sbbs/repo
-
-# Shallow git for specific tag/commit/branch
-RUN git init \
-    && git remote add origin https://gitlab.synchro.net/main/sbbs.git \
+ARG REPOURL=https://github.com/SynchronetBBS/sbbs.git
+ARG TAGNAME=master
+RUN export TAGNAME="$(cd /sbbs/scripts; node -r esm ./get-tag.js)" \
+    && echo "\n--------------------------------------------------------\nChecking out $TAGNAME\n" \
+    && git init \
+    && git remote add origin $REPOURL \
     && git fetch --depth 1 origin $TAGNAME \
-    && git checkout FETCH_HEAD
+    && git checkout FETCH_HEAD \
+    && rm /sbbs/scripts/get-tag.js
 
 # Build Synchronet
 RUN cd ./install \
@@ -54,7 +71,7 @@ RUN cd ./install \
 RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/exec/version.txt) \
     && (echo "$(/sbbs/exec/sbbs version)" >> /sbbs/exec/version.txt)
 
-RUN mv /sbbs/exec/node /sbbs/exec/sbbsnode \
+RUN cp /sbbs/exec/node /sbbs/exec/sbbsnode \
     && mv /sbbs/ctrl /sbbs/ctrl.orig \
     && mv /sbbs/xtrn /sbbs/xtrn.orig \
     && mv /sbbs/web /sbbs/web.orig \
@@ -69,8 +86,6 @@ RUN mv /sbbs/exec/node /sbbs/exec/sbbsnode \
 # Copy utility scripts and run post-build script
 COPY scripts /sbbs/scripts
 RUN cd /sbbs/scripts \
-    && chmod +x /sbbs/scripts/sbbs-* \
-    && npm ci \
     && node -r esm /sbbs/scripts/post-build.js \
     && rm /sbbs/scripts/post-build.js
 

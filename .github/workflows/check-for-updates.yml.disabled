@@ -1,8 +1,12 @@
 name: Check Synchronet Source Repository for Updates
 on:
-  # 9am utc daily (1-2am california)
+  push:
+    branches:
+      - master
+  # 9am utc daily (~7-8am california)
+  # after gitlab.synchro.net runs nightlies (5am)
   schedule:
-    - cron: "0 9 * * *"
+    - cron: "0 15 * * *"
 
 jobs:
   stale:
