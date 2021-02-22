@@ -5,7 +5,8 @@
 #   docker build --build-arg NAME=VALUE ...
 #
 #   REPURL
-#       default: github mirror, which should be faster in build environment
+#       default: https://github.com/SynchronetBBS/sbbs.git
+#                github mirror, which should be faster in build environment
 #       upstream: use https://gitlab.synchro.net/main/sbbs.git
 #   TAGNAME = specific tag/commit/branch to build from
 #       default: master - latest nightly for default REPOURL above
