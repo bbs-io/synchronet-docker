@@ -4,13 +4,13 @@ services:
     container_name: sbbs
 
     # -- LOCAL BUILD ----------------------------
-    build:
-      context: ./docker
-    image: bbsio/synchronet:local
+    # build:
+    #  context: ./docker
+    # image: bbsio/synchronet:local
     # -------------------------------------------
 
     # -- LATEST RELEASE -------------------------
-    # image: bbsio/synchronet:latest
+    image: bbsio/synchronet:latest
     # -------------------------------------------
 
     # -- NIGHTLY --------------------------------
