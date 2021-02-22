@@ -10,11 +10,9 @@
 #       upstream: use https://gitlab.synchro.net/main/sbbs.git
 #   TAGNAME = specific tag/commit/branch to build from
 #       default: master - latest nightly for default REPOURL above
-#       release*: latest release from synchronet-version-reference.json
-#       nightly*: latest nightly from synchronet-version-reference.json
 
 # Using node-stretch as baseline, to be able to use node based scripts.
-FROM node:14-stretch as BASE
+FROM node:14-stretch as base
 
 # Utilities & Runtime Pre-requisites
 RUN echo "deb http://ftp.au.debian.org/debian/ stretch contrib" > /etc/apt/sources.list.d/contrib.list
@@ -22,8 +20,9 @@ RUN apt-get update \
     && apt-get install -yqq \
     curl wget procps less zip unzip arj unrar-free \
     lhasa arc zoo logrotate libmozjs185-1.0 cron \
-    dosemu build-essential git apt-utils nano \
+    build-essential git apt-utils nano \
     libcap2-bin sudo \
+    && (apt-get install -yqq dosemu || echo "no dosemu available") \
     && cd /tmp \
     && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
     && git config --global core.autocrlf false \
@@ -32,7 +31,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #Build Stage
-FROM BASE as BUILD
+FROM base as build
 
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
@@ -46,7 +45,6 @@ RUN apt-get update \
 
 # Prepare scripts directory
 WORKDIR /sbbs/scripts
-COPY ./synchronet-version-reference.json /sbbs/synchronet-version-reference.json
 COPY ./scripts .
 RUN npm ci \
     && chmod +x /sbbs/scripts/sbbs-*
@@ -55,18 +53,16 @@ RUN npm ci \
 WORKDIR /sbbs/repo
 ARG REPOURL=https://github.com/SynchronetBBS/sbbs.git
 ARG TAGNAME=master
-RUN export TAGNAME="$(cd /sbbs/scripts; node -r esm ./get-tag.js)" \
-    && echo "\n--------------------------------------------------------\nChecking out $TAGNAME\n" \
+RUN echo "\n--------------------------------------------------------\nChecking out $TAGNAME\n" \
     && git init \
     && git remote add origin $REPOURL \
     && git fetch --depth 1 origin $TAGNAME \
-    && git checkout FETCH_HEAD \
-    && rm /sbbs/scripts/get-tag.js
+    && git checkout FETCH_HEAD
 
 # Build Synchronet
 RUN cd ./install \
     && sed -i.bak '/git/d' ./GNUmakefile \
-    && make RELEASE=1 USE_DOSEMU=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
+    && make RELEASE=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
 
 # capture hash and version
 RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/exec/version.txt) \
@@ -91,9 +87,9 @@ RUN cd /sbbs/scripts \
     && rm /sbbs/scripts/post-build.js
 
 # Runtime Stage
-FROM BASE as RUNTIME
+FROM base as runtime
 
-COPY --from=BUILD /sbbs /sbbs
+COPY --from=build /sbbs /sbbs
 
 # Environment variables for use
 ENV SBBSCTRL=/sbbs/ctrl

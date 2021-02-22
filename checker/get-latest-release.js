@@ -1,24 +1,7 @@
 import fetch from "node-fetch";
 import cheerio from "cheerio";
 
-export const getLatest = async () => {
-  const $ = await fetch(
-    `https://gitlab.synchro.net/main/sbbs/-/tags?search=sbbs`
-  )
-    .then((r) => r.text())
-    .then((t) => cheerio.load(t));
-
-  const tags = $(".tags li");
-  for (const el of tags) {
-    const name = $("a.item-title", el).text();
-    const hash = $("a.commit-sha", el).attr("href").split("/").pop();
-
-    if (/^sbbs\d+[a-z]$/.test(name)) {
-      return { name, hash, tag: name };
-    }
-  }
-};
-
+// default
 export const getLatestFromGithubMirror = async () => {
   const data = await fetch(
     "https://api.github.com/repos/SynchronetBBS/sbbs/git/matching-refs/tags/sbbs",
@@ -40,6 +23,29 @@ export const getLatestFromGithubMirror = async () => {
 
   // return latest/highest match
   return refs[0];
+};
+
+// reference
+export const getLatest = async () => {
+  const $ = await fetch(
+    `https://gitlab.synchro.net/main/sbbs/-/tags?search=sbbs`
+  )
+    .then((r) => r.text())
+    .then((t) => cheerio.load(t));
+
+  const tags = $(".tags li");
+  for (const el of tags) {
+    const name = $("a.item-title", el).text();
+    const hash = $("a.commit-sha", el).attr("href").split("/").pop();
+
+    if (/^sbbs\d+[a-z]$/.test(name)) {
+      return {
+        name,
+        hash,
+        tag: name,
+      };
+    }
+  }
 };
 
 export default getLatestFromGithubMirror;

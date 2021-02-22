@@ -7,7 +7,7 @@ export default async function getReleases() {
   let nightly = await getLatestNightly();
 
   const r = (o) => (o && o.name ? `release-${o.name}` : null);
-  const t = (o) => (o && o.name ? `nightly-${release.name}` : null);
+  const t = (o) => (o && o.name ? `nightly-${o.name}` : null);
 
   let hasRelease = true;
   if (release && release.name && (await doesTagExist(r(release)))) {

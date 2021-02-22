@@ -1,7 +1,28 @@
 import fetch from "node-fetch";
 import cheerio from "cheerio";
 
-export const getLatestNightly = async () => {
+// default
+export const getLatestNightlyFromGithubMirror = async () => {
+  const data = await fetch(
+    "https://api.github.com/repos/SynchronetBBS/sbbs/commits/master",
+    {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+      },
+    }
+  ).then((r) => r.json());
+
+  const hash = data.parents[0].sha;
+  const name = new Date(data.commit.author.date)
+    .toJSON()
+    .replace(/\D/g, "")
+    .substr(0, 8);
+
+  return { name, hash, tag: hash };
+};
+
+// reference
+export const getLatestNightlyFromOfficial = async () => {
   const $ = await fetch(
     // Only successful nightlies are mirrored here
     "https://gitlab.com/SynchronetBBS/sbbs/-/commits/dailybuild_linux-x64/"
@@ -27,25 +48,6 @@ export const getLatestNightly = async () => {
     return { name, hash, tag: hash };
   }
   return null;
-};
-
-export const getLatestNightlyFromGithubMirror = async () => {
-  const data = await fetch(
-    "https://api.github.com/repos/SynchronetBBS/sbbs/commits/master",
-    {
-      headers: {
-        Accept: "application/vnd.github.v3+json",
-      },
-    }
-  ).then((r) => r.json());
-
-  const hash = data.parents[0].sha;
-  const name = new Date(data.commit.author.date)
-    .toJSON()
-    .replace(/\D/g, "")
-    .substr(0, 8);
-
-  return { name, hash, tag: hash };
 };
 
 export default getLatestNightlyFromGithubMirror;
