@@ -100,3 +100,7 @@ Other services/ports that may be enabled:
 - `24553` - binkps
 - `143` - imap
 - `993` - imap+tls
+
+## License
+
+This project is ISC Licensed, Synchronet itself is mostly GPL.
