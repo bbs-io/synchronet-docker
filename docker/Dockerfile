@@ -31,9 +31,17 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
-# deno
-ENV DENO_INSTALL="/$HOME/.deno" PATH="/$HOME/.deno/bin:$PATH"
+# Environment variables for use
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+
+# Install Deno - put deno app cache in /sbbs/data for persistance
+ENV DENO_DIR="/sbbs/xtrn/deno/cache"
+ENV DENO_INSTALL_ROOT="/sbbs/xtrn/deno"
 RUN curl -fsSL https://deno.land/x/install/install.sh | sh
+
+# Include Deno, SBBS Exec and SBBS Scripts in path
+ENV PATH=/root/deno/bin:/sbbs/xtrn/deno/bin:$PATH:/sbbs/scripts:/sbbs/exec:
 
 #Build Stage
 FROM base as build
@@ -95,11 +103,6 @@ RUN cd /sbbs/scripts \
 FROM base as runtime
 
 COPY --from=build /sbbs /sbbs
-
-# Environment variables for use
-ENV SBBSCTRL=/sbbs/ctrl
-ENV SBBSEXEC=/sbbs/exec
-ENV PATH=$PATH:/sbbs/scripts:${SBBSEXEC}
 
 WORKDIR /sbbs/ctrl
 
