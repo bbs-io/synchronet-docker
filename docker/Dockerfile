@@ -30,6 +30,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+
+# deno
+ENV DENO_INSTALL="/$HOME/.deno" PATH="/$HOME/.deno/bin:$PATH"
+RUN curl -fsSL https://deno.land/x/install/install.sh | sh
+
 #Build Stage
 FROM base as build
 
