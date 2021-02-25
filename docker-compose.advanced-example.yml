@@ -13,15 +13,15 @@ services:
       restart_policy:
         condition: any
     volumes:
-      - ~/sbbs/ctrl:/sbbs/ctrl
-      - ~/sbbs/nodes:/sbbs/nodes
-      - ~/sbbs/text:/sbbs/text
-      - ~/sbbs/web:/sbbs/web
-      - ~/sbbs/data:/sbbs/data
-      - ~/sbbs/fido:/sbbs/fido
-      - ~/sbbs/xtrn:/sbbs/xtrn
-      - ~/sbbs/mods:/sbbs/mods
-      - ~/sbbs/backup:/backup
+      - /sbbs/ctrl:/sbbs/ctrl
+      - /sbbs/nodes:/sbbs/nodes
+      - /sbbs/text:/sbbs/text
+      - /sbbs/web:/sbbs/web
+      - /sbbs/data:/sbbs/data
+      - /sbbs/fido:/sbbs/fido
+      - /sbbs/xtrn:/sbbs/xtrn
+      - /sbbs/mods:/sbbs/mods
+      - /sbbs/backup:/backup
     networks:
       - bbs
     ports:
@@ -60,11 +60,11 @@ services:
       restart_policy:
         condition: any
     volumes:
-      - ~/sbbs/ctrl:/sbbs/ctrl
-      - ~/sbbs/nodes:/sbbs/nodes
-      - ~/sbbs/text:/sbbs/text
-      - ~/sbbs/data:/sbbs/data
-      - ~/sbbs/mods:/sbbs/mods
+      - /sbbs/ctrl:/sbbs/ctrl
+      - /sbbs/nodes:/sbbs/nodes
+      - /sbbs/text:/sbbs/text
+      - /sbbs/data:/sbbs/data
+      - /sbbs/mods:/sbbs/mods
     command: bash -c "starting in 10 seconds` && sleep 10 && sbbs-init && jsexec -L9 /sbbs/exec/ircd.js"
     ports:
       - 6667:6667
@@ -76,13 +76,13 @@ services:
       restart_policy:
         condition: any
     volumes:
-      - ~/sbbs/ctrl:/sbbs/ctrl
-      - ~/sbbs/nodes:/sbbs/nodes
-      - ~/sbbs/text:/sbbs/text
-      - ~/sbbs/data:/sbbs/data
-      - ~/sbbs/mods:/sbbs/mods
-      - ~/sbbs/web-ecweb4:/sbbs/web
-    command: bash -c "echo `starting in 10 seconds` && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s- /sbbs/ctrl/sbbs.web-ecweb4.ini"
+      - /sbbs/ctrl:/sbbs/ctrl
+      - /sbbs/nodes:/sbbs/nodes
+      - /sbbs/text:/sbbs/text
+      - /sbbs/data:/sbbs/data
+      - /sbbs/mods:/sbbs/mods
+      - /sbbs/web-ecweb4:/sbbs/web
+    command: bash -c "echo `starting in 10 seconds` && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s-"
     ports:
       - 51080:80
 
@@ -92,13 +92,13 @@ services:
       restart_policy:
         condition: any
     volumes:
-      - ~/sbbs/ctrl:/sbbs/ctrl
-      - ~/sbbs/nodes:/sbbs/nodes
-      - ~/sbbs/text:/sbbs/text
-      - ~/sbbs/data:/sbbs/data
-      - ~/sbbs/mods:/sbbs/mods
-      - ~/sbbs/web-runemaster:/sbbs/web
-    command: bash -c "starting in 10 seconds` && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s- /sbbs/ctrl/sbbs.web-runemaster.ini"
+      - /sbbs/ctrl:/sbbs/ctrl
+      - /sbbs/nodes:/sbbs/nodes
+      - /sbbs/text:/sbbs/text
+      - /sbbs/data:/sbbs/data
+      - /sbbs/mods:/sbbs/mods
+      - /sbbs/web-runemaster:/sbbs/web
+    command: bash -c "echo `starting in 10 seconds` && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s-"
     ports:
       - 52080:80
   doorparty:
