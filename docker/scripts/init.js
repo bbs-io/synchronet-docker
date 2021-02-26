@@ -97,7 +97,9 @@ async function upgrade({ currentVersion }) {
 
   // Update reference file(s)
   shell.mkdir("-p", "/backup/defaults/exec");
-  shell.mkdir("-p", "/backup/defaults/xtrn");
+  shell.mkdir("-p", "/backup/defaults/xtrn/.cache");
+  shell.mkdir("-p", "/backup/defaults/xtrn/_deno");
+  shell.mkdir("-p", "/backup/defaults/xtrn/_node");
   shell.mkdir("-p", "/backup/defaults/docs");
   shell.mkdir("-p", "/backup/defaults/ctrl");
   shell.mkdir("-p", "/backup/defaults/text");

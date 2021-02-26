@@ -30,18 +30,18 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Node - Put node data in /sbbs/xtrn for persistance
+ENV PATH=./node_modules/.bin:/sbbs/xtrn/_node/bin:$PATH
+RUN npm config set prefix /sbbs/xtrn/_node --global \
+    && npm config set cache /sbbs/xtrn/.cache/node --global
 
-# Environment variables for use
-ENV SBBSCTRL=/sbbs/ctrl
-ENV SBBSEXEC=/sbbs/exec
-
-# Install Deno - put deno app cache in /sbbs/data for persistance
-ENV DENO_DIR="/sbbs/xtrn/deno/cache"
-ENV DENO_INSTALL_ROOT="/sbbs/xtrn/deno"
-RUN curl -fsSL https://deno.land/x/install/install.sh | sh
-
-# Include Deno, SBBS Exec and SBBS Scripts in path
-ENV PATH=/root/deno/bin:/sbbs/xtrn/deno/bin:$PATH:/sbbs/scripts:/sbbs/exec:
+# Deno - Put deno data /sbbs/xtrn for persistance
+ENV PATH=/root/.deno/bin:/sbbs/xtrn/_deno/bin:$PATH
+ENV DENO_INSTALL="/root/.deno"
+ENV DENO_DIR="/sbbs/xtrn/.cache/deno"
+ENV DENO_INSTALL_ROOT="/sbbs/xtrn/_deno"
+RUN echo "mkdir -p '/sbbs/xtrn/_deno'" >> ~/.bashrc \
+    && curl -fsSL https://deno.land/x/install/install.sh | sh
 
 #Build Stage
 FROM base as build
@@ -105,6 +105,12 @@ FROM base as runtime
 COPY --from=build /sbbs /sbbs
 
 WORKDIR /sbbs/ctrl
+
+# Environment variables for use
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+ENV PATH=$PATH:/sbbs/scripts:/sbbs/exec:
+
 
 # Start SBBS by Default
 CMD ["/sbbs/scripts/sbbs-start"]
