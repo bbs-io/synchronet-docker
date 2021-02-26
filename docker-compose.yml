@@ -21,22 +21,22 @@ services:
     #
     # Specific year-month-day as follows.
     # image: bbsio/synchronet:nightly-YYYYMMDD
-    # image: bbsio/synchronet:nightly-20210218
+    # image: bbsio/synchronet:nightly-20210225
     # -------------------------------------------
 
     deploy:
       restart_policy:
         condition: any
     volumes:
-      - ~/sbbs/ctrl:/sbbs/ctrl
-      - ~/sbbs/text:/sbbs/text
-      - ~/sbbs/web:/sbbs/web
-      - ~/sbbs/data:/sbbs/data
-      - ~/sbbs/fido:/sbbs/fido
-      - ~/sbbs/xtrn:/sbbs/xtrn
-      - ~/sbbs/mods:/sbbs/mods
-      - ~/sbbs/nodes:/sbbs/nodes
-      - ~/sbbs/backup:/backup
+      - $PWD/ctrl:/sbbs/ctrl
+      - $PWD/text:/sbbs/text
+      - $PWD/web:/sbbs/web
+      - $PWD/data:/sbbs/data
+      - $PWD/fido:/sbbs/fido
+      - $PWD/xtrn:/sbbs/xtrn
+      - $PWD/mods:/sbbs/mods
+      - $PWD/nodes:/sbbs/nodes
+      - $PWD/backup:/backup
     networks:
       - sbbs
     ports:
@@ -77,10 +77,10 @@ services:
   #       condition: any
   #       delay: 3s
   #   volumes:
-  #     - ~/sbbs/ctrl:/sbbs/ctrl
-  #     - ~/sbbs/text:/sbbs/text
-  #     - ~/sbbs/data:/sbbs/data
-  #     - ~/sbbs/mods:/sbbs/mods
+  #     - $PWD/ctrl:/sbbs/ctrl
+  #     - $PWD/text:/sbbs/text
+  #     - $PWD/data:/sbbs/data
+  #     - $PWD/mods:/sbbs/mods
   #   command: jsexec /sbbs/exec/ircd.js
   #   ports:
   #     - 6667:6667
@@ -93,12 +93,12 @@ services:
   #       condition: any
   #       delay: 3s
   #   volumes:
-  #     - ~/sbbs/ctrl:/sbbs/ctrl
-  #     - ~/sbbs/text:/sbbs/text
-  #     - ~/sbbs/data:/sbbs/data
-  #     - ~/sbbs/mods:/sbbs/mods
-  #     - ~/sbbs/web-ecweb4:/sbbs/web
-  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- ~/sbbs/ctrl/sbbs.web-ecweb4.ini"
+  #     - $PWD/ctrl:/sbbs/ctrl
+  #     - $PWD/text:/sbbs/text
+  #     - $PWD/data:/sbbs/data
+  #     - $PWD/mods:/sbbs/mods
+  #     - $PWD/web-ecweb4:/sbbs/web
+  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-ecweb4.ini"
   #   ports:
   #     - 51080:80
   #     - 51443:443
@@ -111,12 +111,12 @@ services:
   #       condition: any
   #       delay: 3s
   #   volumes:
-  #     - ~/sbbs/ctrl:/sbbs/ctrl
-  #     - ~/sbbs/text:/sbbs/text
-  #     - ~/sbbs/data:/sbbs/data
-  #     - ~/sbbs/mods:/sbbs/mods
-  #     - ~/sbbs/web-runemaster:/sbbs/web
-  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- ~/sbbs/ctrl/sbbs.web-runemaster.ini"
+  #     - $PWD/ctrl:/sbbs/ctrl
+  #     - $PWD/text:/sbbs/text
+  #     - $PWD/data:/sbbs/data
+  #     - $PWD/mods:/sbbs/mods
+  #     - $PWD/web-runemaster:/sbbs/web
+  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-runemaster.ini"
   #   ports:
   #     - 52080:80
   #     - 52443:443
