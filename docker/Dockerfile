@@ -56,12 +56,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Prepare scripts directory
-WORKDIR /sbbs/scripts
-COPY ./scripts .
-RUN npm ci \
-    && chmod +x /sbbs/scripts/sbbs-*
-
 # Shallow git checkout, adjusts TAGNAME for "nightly" or "release"
 WORKDIR /sbbs/repo
 ARG REPOURL=https://github.com/SynchronetBBS/sbbs.git
@@ -96,8 +90,11 @@ RUN cp /sbbs/exec/node /sbbs/exec/sbbsnode \
 # Copy utility scripts and run post-build script
 COPY scripts /sbbs/scripts
 RUN cd /sbbs/scripts \
+    && npm ci \
+    && chmod +x /sbbs/scripts/sbbs-* \
     && node -r esm /sbbs/scripts/post-build.js \
     && rm /sbbs/scripts/post-build.js
+    
 
 # Runtime Stage
 FROM base as runtime
