@@ -5,7 +5,7 @@ cd -P -- "$(dirname -- "$0")"
 
 node -r esm init.js
 
-# extract x00, all files renamed lowercase
+# Install x00, all files renamed lowercase
 if [ ! -f  /sbbs/xtrn/dosutils/x00.exe ]; then
 (
   echo "Downloading and extraction x00 1.53a" \
