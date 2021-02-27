@@ -9,7 +9,7 @@
 #                github mirror, which should be faster in build environment
 #       upstream: use https://gitlab.synchro.net/main/sbbs.git
 #   TAGNAME = specific tag/commit/branch to build from
-#       default: master - latest nightly for default REPOURL above
+#       default: dailybuild_linux-x64 - latest nightly for default REPOURL above
 
 # Using node-stretch as baseline, to be able to use node based scripts.
 FROM node:14-stretch as base
@@ -18,7 +18,7 @@ FROM node:14-stretch as base
 RUN echo "deb http://ftp.au.debian.org/debian/ stretch contrib" > /etc/apt/sources.list.d/contrib.list
 RUN apt-get update \
     && apt-get install -yqq \
-    curl wget procps less zip unzip arj unrar-free \
+    curl wget ftp procps less zip unzip arj unrar-free \
     lhasa arc zoo logrotate libmozjs185-1.0 cron \
     build-essential git apt-utils nano \
     libcap2-bin sudo \
@@ -65,7 +65,7 @@ RUN npm ci \
 # Shallow git checkout, adjusts TAGNAME for "nightly" or "release"
 WORKDIR /sbbs/repo
 ARG REPOURL=https://github.com/SynchronetBBS/sbbs.git
-ARG TAGNAME=master
+ARG TAGNAME=dailybuild_linux-x64
 RUN echo "\n--------------------------------------------------------\nChecking out $TAGNAME\n" \
     && git init \
     && git remote add origin $REPOURL \
