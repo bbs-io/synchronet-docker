@@ -58,7 +58,11 @@ async function checkNode(n) {
 // default in-container location.
 async function checkNodes() {
   await checkNode(1); // ensure /sbbs/node1 exists, will error without it.
-  await fsp.writeFile(`/sbbs/exec/get-node-count.js`);
+  await fsp.writeFile(
+    `/sbbs/exec/get-node-count.js`,
+    "write(JSON.stringify({nodes:system.nodes}));",
+    "utf8"
+  );
   const { stdout, stderr, code } = shell.exec(
     // 'jsexec -n -r "write(JSON.stringify({nodes:system.nodes}));"',
     "jsexec -n /sbbs/exec/get-node-count.js",
