@@ -104,3 +104,5 @@ Other services/ports that may be enabled:
 ## License
 
 This project is ISC Licensed, Synchronet itself is mostly GPL.
+
+<!-- Update: 20210227 - force build -->
