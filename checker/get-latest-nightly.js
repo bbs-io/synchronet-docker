@@ -4,7 +4,8 @@ import cheerio from "cheerio";
 // default
 export const getLatestNightlyFromGithubMirror = async () => {
   const data = await fetch(
-    "https://api.github.com/repos/SynchronetBBS/sbbs/commits/", //"dailybuild_linux-x64",
+    // "https://api.github.com/repos/SynchronetBBS/sbbs/commits/masterdailybuild_linux-x64",
+    "https://api.github.com/repos/SynchronetBBS/sbbs/commits/master",
     {
       headers: {
         Accept: "application/vnd.github.v3+json",
