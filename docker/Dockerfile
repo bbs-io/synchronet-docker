@@ -30,6 +30,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+ENV TERM=xterm
+
 # Node - Put node data in /sbbs/xtrn for persistance
 ENV PATH=./node_modules/.bin:/sbbs/xtrn/_node/bin:$PATH
 RUN npm config set prefix /sbbs/xtrn/_node --global \
