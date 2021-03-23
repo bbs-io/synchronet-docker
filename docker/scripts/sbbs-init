@@ -10,7 +10,7 @@ if [ ! -f  /sbbs/xtrn/dosutils/x00.exe ]; then
 (
   echo "Downloading and extraction x00 1.53a" \
   && cd /tmp \
-  && wget https://sfo2.digitaloceanspaces.com/bbsland-s1/bbs-io/downloads/fossil_drivers/x00153a.zip \
+  && wget https://s1.bbs.land/bbs-io/downloads/fossil_drivers/x00153a.zip \
   && mkdir -p /sbbs/xtrn/dosutils/x00 \
   && cd /sbbs/xtrn/dosutils/x00 \
   && unzip -oq /tmp/x00153a.zip -d ./ \
