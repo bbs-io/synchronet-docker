@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 
 # Change to scripts directory
 cd -P -- "$(dirname -- "$0")"

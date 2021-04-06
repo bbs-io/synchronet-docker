@@ -16,6 +16,7 @@ jobs:
       - name: Set Docker and SBBS Tags
         id: tags
         run: |
+          docker pull node:14-stretch
           cd checker
           npm ci
           echo "GITHUB_REF=$GITHUB_REF"

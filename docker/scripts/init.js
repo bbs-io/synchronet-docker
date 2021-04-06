@@ -36,6 +36,8 @@ async function checkXtrn() {
   const list = await fsp.readdir("/sbbs/xtrn.orig");
   for (const item of list) {
     if (dest.includes(item)) continue;
+    if (item[0] === ".") continue;
+    if (!(await fsp.stat(`/sbbs/xtrn.orig/${item}`)).isDirectory) continue;
     shell.cp("-r", `/sbbs/xtrn.orig/${item}/`, `/sbbs/xtrn/${item}/`);
   }
   shell.cp("-r", `/sbbs/xtrn.orig/3rdp-install/`, `/sbbs/xtrn/3rdp-install/`);
@@ -116,6 +118,17 @@ async function upgrade({ currentVersion }) {
   shell.cp("-rf", `/sbbs/text.orig/*`, `/backup/defaults/text/`);
   shell.cp("-rf", `/sbbs/web.orig/*`, `/backup/defaults/web-runemaster/`);
   shell.cp("-rf", `/sbbs/webv4/*`, `/backup/defaults/web-ecweb4/`);
+
+  const { stdout, stderr, code } = shell.exec("jsexec -n update", {
+    silent: true,
+  });
+  if (code) {
+    throw Object.assign(new Error("Unexpected result from 'jsexec update'"), {
+      code,
+      stdout,
+      stderr,
+    });
+  }
 
   // write current version to version.txt file for upgrade tracking
   await fsp.writeFile(`/sbbs/ctrl/version.txt`, currentVersion, "utf8");
