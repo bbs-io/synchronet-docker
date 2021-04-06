@@ -15,8 +15,8 @@
 FROM node:14-stretch as base
 
 # Utilities & Runtime Pre-requisites
-RUN echo "deb http://ftp.au.debian.org/debian/ stretch contrib" > /etc/apt/sources.list.d/contrib.list
-RUN apt update \
+RUN (echo "deb http://ftp.au.debian.org/debian/ stretch contrib" > /etc/apt/sources.list.d/contrib.list) \
+    && apt update \
     && apt upgrade -y \
     && apt install -yqq \
     curl wget ftp procps less zip unzip arj unrar-free p7zip-full \
