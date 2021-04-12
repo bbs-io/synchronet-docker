@@ -69,9 +69,13 @@ RUN echo "\n--------------------------------------------------------\nChecking o
     && git fetch --depth 1 origin $TAGNAME \
     && git checkout FETCH_HEAD
 
-# Build Synchronet
+# Build Synchronet - Install
 RUN cd ./install \
     && sed -i.bak '/git/d' ./GNUmakefile \
+    && make RELEASE=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
+
+# Build Synchronet - Other executables (upgrade_*)
+RUN cd ./src/sbbs3 \
     && make RELEASE=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
 
 # capture hash and version
