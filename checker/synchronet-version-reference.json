@@ -1,0 +1,12 @@
+{
+  "release": {
+    "name": "sbbs318b",
+    "hash": "08328b1e92c41102b8efa00cbd74ad811ff435e4",
+    "tag": "sbbs318b"
+  },
+  "nightly": {
+    "name": "20210712",
+    "hash": "e53c5926508c739c27c4d67c1746cbd017f363d0",
+    "tag": "e53c5926508c739c27c4d67c1746cbd017f363d0"
+  }
+}
