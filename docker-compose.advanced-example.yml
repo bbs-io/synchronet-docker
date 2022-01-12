@@ -65,7 +65,7 @@ services:
       - $PWD/text:/sbbs/text
       - $PWD/data:/sbbs/data
       - $PWD/mods:/sbbs/mods
-    command: bash -c "starting in 10 seconds` && sleep 10 && sbbs-init && jsexec -L9 /sbbs/exec/ircd.js"
+    command: bash -c "echo 'starting in 10 seconds' && sleep 10 && sbbs-init && jsexec -L9 /sbbs/exec/ircd.js"
     ports:
       - 6667:6667
 
@@ -82,7 +82,7 @@ services:
       - $PWD/data:/sbbs/data
       - $PWD/mods:/sbbs/mods
       - $PWD/web-ecweb4:/sbbs/web
-    command: bash -c "echo `starting in 10 seconds` && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s-"
+    command: bash -c "echo 'starting in 10 seconds' && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s-"
     ports:
       - 51080:80
 
@@ -98,7 +98,7 @@ services:
       - $PWD/data:/sbbs/data
       - $PWD/mods:/sbbs/mods
       - $PWD/web-runemaster:/sbbs/web
-    command: bash -c "echo `starting in 10 seconds` && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s-"
+    command: bash -c "echo 'starting in 10 seconds' && sleep 10 && sbbs-init && /sbbs/exec/sbbs t- f- m- s-"
     ports:
       - 52080:80
   doorparty:
