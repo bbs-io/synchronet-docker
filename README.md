@@ -1,5 +1,14 @@
 # Synchronet BBS Software
 
+
+## WARNING There is currently an issue with the latest, nightly and 3.19b containers
+
+You should use `:3.18b` as your target version, or continue with your existing version.  I'm refactoring some bits of this project, and will release new images as soon as this is done.
+
+NOTE: I will likely be changing the base image to Ubuntu and leave out the DOSemu that was installed in earlier images, at least in the near term.
+
+----
+
 **[Synchronet](http://wiki.synchro.net/)** is a modern bulletin board software supporting classic terminal interfaces as well as modern web interfaces and other services.
 
 This repository is meant to build/push to [bbsio/synchronet on Docker Hub](https://hub.docker.com/repository/docker/bbsio/synchronet).
