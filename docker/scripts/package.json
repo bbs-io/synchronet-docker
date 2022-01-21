@@ -15,7 +15,7 @@
   "homepage": "https://github.com/bbs-io/synchronet-docker#readme",
   "dependencies": {
     "esm": "^3.2.25",
-    "shelljs": "^0.8.4"
+    "shelljs": "^0.8.5"
   },
   "devDependencies": {},
   "scripts": {}
