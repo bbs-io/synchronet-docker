@@ -102,7 +102,6 @@ RUN cd /sbbs/scripts \
     && node -r esm /sbbs/scripts/post-build.js \
     && rm /sbbs/scripts/post-build.js
 
-
 # Runtime Stage
 FROM base as runtime
 
