@@ -3,9 +3,11 @@
 
 ## README - WARNING
 
-Looks like the issue with 3.19 was fixed, and the nightlies should be workable on AMD systems... there was a build optimization on the github worker (intel) that was causign a bug running on AMD hardware.  If you are running a recent Intel CPU, this shouldn't affect you.  If you are using AMD, either stick to 3.18b or shift to a recent nightly.
+2022-04-11
 
-Disabling nightly workflow, it's been broken by a system update that is effecting the build scripts, been meaning to refactor these, will work on it over the coming week (2022-04-11)
+The nightly/daily build process has been broken (apparently for a few weeks) by an underlying update... working on a fix in the coming week.
+
+Looks like the issue with 3.19 was fixed upstream... there was a build optimization on the github worker (intel) that was causing a bug running on AMD hardware.  If you are running a recent Intel CPU, this shouldn't affect you.  If you are using AMD, stick to 3.18b for now.
 
 ----
 
