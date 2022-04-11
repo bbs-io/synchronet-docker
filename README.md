@@ -1,11 +1,11 @@
 # Synchronet BBS Software
 
 
-## WARNING There is currently an issue with the latest, nightly and 3.19b containers
+## README - WARNING
 
-You should use `:3.18b` as your target version, or continue with your existing version.  I'm refactoring some bits of this project, and will release new images as soon as this is done.
+Looks like the issue with 3.19 was fixed, and the nightlies should be workable on AMD systems... there was a build optimization on the github worker (intel) that was causign a bug running on AMD hardware.  If you are running a recent Intel CPU, this shouldn't affect you.  If you are using AMD, either stick to 3.18b or shift to a recent nightly.
 
-NOTE: I will likely be changing the base image to Ubuntu and leave out the DOSemu that was installed in earlier images, at least in the near term.
+Disabling nightly workflow, it's been broken by a system update that is effecting the build scripts, been meaning to refactor these, will work on it over the coming week (2022-04-11)
 
 ----
 
