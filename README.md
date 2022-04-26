@@ -3,17 +3,21 @@
 
 ## README - WARNING
 
-2022-04-11
+The current `:latest`, `:3.19b`, `:3.19`, `:3` tags are Intel only.  There was an issue with the build configuration that optimized for modern Intel instructions that break on Ryzen and possibly older Intel CPUs.  If this doesn't run for you, you should stick to `3.18b` or move to a nightly release (once fixed).
 
-The nightly/daily build process has been broken (apparently for a few weeks) by an underlying update... working on a fix in the coming week.
+### 2022-04-26
 
-Looks like the issue with 3.19 was fixed upstream... there was a build optimization on the github worker (intel) that was causing a bug running on AMD hardware.  If you are running a recent Intel CPU, this shouldn't affect you.  If you are using AMD, stick to 3.18b for now.
+Working on updating the build and release scripts, this will change the behaviors slightly, but should mean a more clear setup/configuration and require less volume mounts for persistence.  Hoping to have an update in the next few days, will update the date above as/if it changes.
+
+### 2022-02-22
+
+If you are using `:latest` from before 2022-02-22, it was a bleeding edge build from the mainline repository, you should change to `:nightly`\*
 
 ----
 
 **[Synchronet](http://wiki.synchro.net/)** is a modern bulletin board software supporting classic terminal interfaces as well as modern web interfaces and other services.
 
-This repository is meant to build/push to [bbsio/synchronet on Docker Hub](https://hub.docker.com/repository/docker/bbsio/synchronet).
+The [repository source](https://github.com/bbs-io/synchronet-docker/) is meant to build/push to [bbsio/synchronet on Docker Hub](https://hub.docker.com/repository/docker/bbsio/synchronet).
 For the `@bbs/synchronet` utility, [click here](https://github.com/bbs-io/synchronet-docker-util)
 
 ### Tags
@@ -22,8 +26,6 @@ For the `@bbs/synchronet` utility, [click here](https://github.com/bbs-io/synchr
 - `#`, `#.##`, `#.##x` - Major, Minor, Patch options
 - `:nightly` - The latest nightly
 - `:nightly-YYYYMMDD` - Specific nightly (ex: `nightly-20210222`)
-
-**\*WARNING:** If you are using `:latest` from before 2022-02-22, it was a bleeding edge build from the mainline repository, you should change to `:nightly`\*
 
 ### Windows Users
 
