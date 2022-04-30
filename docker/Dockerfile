@@ -11,50 +11,52 @@
 #   TAGNAME = specific tag/commit/branch to build from
 #       default: dailybuild_linux-x64 - latest nightly for default REPOURL above
 
-# Using node-stretch as baseline, to be able to use node based scripts.
-FROM node:14-stretch as base
-
-# Utilities & Runtime Pre-requisites
-RUN (echo "deb http://ftp.au.debian.org/debian/ stretch contrib" > /etc/apt/sources.list.d/contrib.list) \
-    && apt update \
-    && apt upgrade -y \
-    && apt install -yqq \
-    curl wget ftp procps less zip unzip arj unrar-free p7zip-full \
-    lhasa arc zoo logrotate libmozjs185-1.0 cron \
-    build-essential git apt-utils nano libarchive-dev \
-    libcap2-bin sudo openssh-client \
-    && (apt install -yqq dosemu || echo "no dosemu available") \
-    && cd /tmp \
-    && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
-    && git config --global core.autocrlf false \
-    && apt -y autoremove \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Using bullseye-slim as baseline, to be able to use node based scripts.
+FROM debian:bullseye-slim as base
 
 ENV TERM=xterm
 
-# Node - Put node data in /sbbs/xtrn for persistance
-ENV PATH=./node_modules/.bin:/sbbs/xtrn/_node/bin:$PATH
-RUN npm config set prefix /sbbs/xtrn/_node --global \
-    && npm config set cache /sbbs/xtrn/.cache/node --global
+ARG DEBIAN_FRONTEND=noninteractive
+ONBUILD ARG DEBIAN_FRONTEND=noninteractive
 
-# Deno - Put deno data /sbbs/xtrn for persistance
-ENV PATH=/root/.deno/bin:/sbbs/xtrn/_deno/bin:$PATH
-ENV DENO_INSTALL="/root/.deno"
-ENV DENO_DIR="/sbbs/xtrn/.cache/deno"
-ENV DENO_INSTALL_ROOT="/sbbs/xtrn/_deno"
-RUN echo "mkdir -p '/sbbs/xtrn/_deno'" >> ~/.bashrc \
-    && curl -fsSL https://deno.land/x/install/install.sh | sh
+# Utilities & Runtime Pre-requisites
+RUN (echo "deb http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/contrib.list) \
+    && (echo "deb-src http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/contrib.list) \
+    && (echo "deb http://deb.debian.org/debian/ bullseye testing" > /etc/apt/sources.list.d/contrib.list) \
+    && (echo "deb-src http://deb.debian.org/debian/ bullseye testing" > /etc/apt/sources.list.d/contrib.list) \
+    && (echo "deb http://deb.debian.org/debian/ bullseye contrib" > /etc/apt/sources.list.d/contrib.list) \
+    && (echo "deb-src http://deb.debian.org/debian/ bullseye contrib" > /etc/apt/sources.list.d/contrib.list)
 
-#Build Stage
-FROM base as build
+RUN apt-get update \
+    && apt-get upgrade -yqq \
+    && apt-get install -yqq \
+    curl wget ftp openssh-client \
+    nano less procps libcap2-bin \
+    libarchive13 libarchive-tools \
+    zip unzip arj unrar-free p7zip-full lhasa arc \
+    libnspr4 sudo \
+    && cd /tmp \
+    && apt-get -y autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY --from=denoland/deno:bin /deno /usr/local/bin/deno
+
+
+# Build Stage
+FROM base AS build
 
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
 
-# Build Deps
+# Build dependencies
 RUN apt-get update \
-    && apt-get install -yqq libnspr4-dev libncurses5-dev libmozjs185-dev pkgconf \
+    && apt-get install -yqq \
+    build-essential libarchive-dev git \
+    libnspr4-dev libncurses5-dev python2 pkgconf \
+    && cd /tmp \
+    && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
+    && git config --global core.autocrlf false \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -72,54 +74,59 @@ RUN echo "\n--------------------------------------------------------\nChecking o
 # Build Synchronet - Install
 RUN cd ./install \
     && sed -i.bak '/git/d' ./GNUmakefile \
-    && make RELEASE=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
+    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
 
 # Build Synchronet - Other executables (upgrade_*)
 RUN cd ./src/sbbs3 \
-    && make RELEASE=1 NO_X=1 JSINCLUDE=/usr/include/js JSLIB=mozjs185 SBBSDIR=/sbbs install
+    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
 
 # capture hash and version
 RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/exec/version.txt) \
     && (echo "$(/sbbs/exec/sbbs version)" >> /sbbs/exec/version.txt)
 
+WORKDIR /sbbs/scripts
 RUN cp /sbbs/exec/node /sbbs/exec/sbbsnode \
-    && mv /sbbs/ctrl /sbbs/ctrl.orig \
-    && mv /sbbs/xtrn /sbbs/xtrn.orig \
-    && mv /sbbs/web /sbbs/web.orig \
-    && mv /sbbs/text /sbbs/text.orig \
-    && cp -R /sbbs/node1 /sbbs/node.orig \
-    && rm -rf /sbbs/node1 \
+    && mkdir -p /sbbs/dist \
+    && mv /sbbs/ctrl /sbbs/dist/ctrl \
+    && mv /sbbs/docs /sbbs/dist/docs \
+    && mv /sbbs/node1 /sbbs/dist/node1 \
+    && mv /sbbs/text /sbbs/dist/text \
+    && mv /sbbs/xtrn /sbbs/dist/xtrn \
+    && mv /sbbs/web /sbbs/dist/web-runemaster \
+    && mv /sbbs/webv4 /sbbs/dist/web-ecweb4 \
     && rm -rf /sbbs/node2 \
     && rm -rf /sbbs/node3 \
     && rm -rf /sbbs/node4 \
-    && rm -rf /sbbs/3rdp /sbbs/src /sbbs/repo
+    && rm -rf /sbbs/3rdp \
+    && rm -rf /sbbs/src \
+    && rm -rf /sbbs/repo
 
 # Copy utility scripts and run post-build script
 COPY scripts /sbbs/scripts
 RUN cd /sbbs/scripts \
-    && npm ci \
-    && chmod +x /sbbs/scripts/sbbs-* \
-    && node -r esm /sbbs/scripts/post-build.js \
-    && rm /sbbs/scripts/post-build.js
+    && chmod +x /sbbs/scripts/* \
+    && /sbbs/scripts/post-build.ts \
+    && rm /sbbs/scripts/post-build.ts
 
-# Runtime Stage
-FROM base as runtime
+FROM base AS runtime
 
 COPY --from=build /sbbs /sbbs
 
-WORKDIR /sbbs/ctrl
+WORKDIR /sbbs
 
 # Environment variables for use
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
 ENV PATH=$PATH:/sbbs/scripts:/sbbs/exec:
 
+# Cache dependencies for sbbs scripts
+RUN deno cache --unstable /sbbs/scripts/*.ts
 
 # Start SBBS by Default
-CMD ["/sbbs/scripts/sbbs-start"]
+CMD ["/sbbs/scripts/sbbs"]
 
 # Declare expected volume mounts
-VOLUME [ "/sbbs/data","/sbbs/ctrl","/sbbs/text","/sbbs/web","/sbbs/fido","/sbbs/xtrn","/sbbs/mods","/sbbs/nodes","/backup" ]
+VOLUME [ "/sbbs-data" ]
 
 # Show version built
 RUN cat /sbbs/exec/version.txt && echo ""

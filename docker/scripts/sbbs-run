@@ -3,7 +3,9 @@
 # Change to scripts directory
 cd -P -- "$(dirname -- "$0")"
 
+# Run initialization
 ./sbbs-init
+
 cd /sbbs/ctrl
 
 "$@"
