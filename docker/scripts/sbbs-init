@@ -3,22 +3,5 @@
 # Change to scripts directory
 cd -P -- "$(dirname -- "$0")"
 
-node -r esm init.js
-
-# Install x00, all files renamed lowercase
-if [ ! -f  /sbbs/xtrn/dosutils/x00.exe ]; then
-(
-  echo "Downloading and extraction x00 1.53a" \
-  && cd /tmp \
-  && wget https://s1.bbs.land/bbs-io/downloads/fossil_drivers/x00153a.zip \
-  && mkdir -p /sbbs/xtrn/dosutils/x00 \
-  && cd /sbbs/xtrn/dosutils/x00 \
-  && unzip -oq /tmp/x00153a.zip -d ./ \
-  && rm /tmp/x00153a.zip \
-  && (for i in $( ls | grep [A-Z] ); do mv -i $i `echo $i | tr 'A-Z' 'a-z'`; done) \
-  && cp ./x00.sys ../x00.exe
-)
-fi
-
-
-./sbbs-access
+./init.ts
+chmod -R a+rwX /sbbs-data

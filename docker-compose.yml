@@ -10,7 +10,7 @@ services:
     # -------------------------------------------
 
     # -- LATEST RELEASE -------------------------
-    image: bbsio/synchronet:latest
+    image: bbsio/synchronet:nightly
     # -------------------------------------------
 
     # -- NIGHTLY --------------------------------
@@ -28,15 +28,7 @@ services:
       restart_policy:
         condition: any
     volumes:
-      - $PWD/ctrl:/sbbs/ctrl
-      - $PWD/text:/sbbs/text
-      - $PWD/web:/sbbs/web
-      - $PWD/data:/sbbs/data
-      - $PWD/fido:/sbbs/fido
-      - $PWD/xtrn:/sbbs/xtrn
-      - $PWD/mods:/sbbs/mods
-      - $PWD/nodes:/sbbs/nodes
-      - $PWD/backup:/backup
+      - $PWD:/sbbs-data
     networks:
       - sbbs
     ports:
