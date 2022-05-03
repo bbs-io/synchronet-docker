@@ -7,16 +7,18 @@ issue with the build configuration that optimized for modern Intel instructions
 that break on Ryzen and possibly older Intel CPUs. If this doesn't run for you,
 you should stick to `3.18b` or move to a nightly release (once fixed).
 
-### 2022-04-30
+### 2022-05-02
 
-Updated image builds, should work for nightly as of today, for AMD Ryzen as well
-as Intel.
+Updated image builds, should work for nightly once detection scripts are updated 
+as of today, for AMD Ryzen as well as Intel.  Self-build if you need this sooner.
 
 **Breaking change** - You now only need to mount a single directory `.` to
 `/sbbs-data`, if you were using the example docker-compose, you should be able
 to simply switch out the volume path(s) for a single entry. If you are
 overriding the web directory, you should still mount this as `mydir:/sbbs/web`
-which will work properly inside the container.
+which will work properly inside the container.  The backup directory is the only 
+change that might break in practice.. instead of `/backup` `/sbbs-data/backup` 
+is used.
 
 `/sbbs/scripts/sbbs` - will appear higher in the PATH statement before
 `/sbbs/exec/sbbs` this is intentional as it will run the initialization process
