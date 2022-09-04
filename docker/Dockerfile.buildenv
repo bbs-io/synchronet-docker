@@ -1,0 +1,37 @@
+# docker build -t bbs-io/synchronet:buildenv -f docker/Dockerfile.buildenv ./docker
+
+# Using bullseye-slim as baseline, to be able to use node based scripts.
+FROM debian:bullseye-slim as build
+
+ENV TERM=xterm
+
+ARG DEBIAN_FRONTEND=noninteractive
+ONBUILD ARG DEBIAN_FRONTEND=noninteractive
+
+# Utilities & Runtime Pre-requisites
+RUN (echo "deb http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/contrib.list) \
+  && (echo "deb-src http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/contrib.list) \
+  && (echo "deb http://deb.debian.org/debian/ bullseye testing" > /etc/apt/sources.list.d/contrib.list) \
+  && (echo "deb-src http://deb.debian.org/debian/ bullseye testing" > /etc/apt/sources.list.d/contrib.list) \
+  && (echo "deb http://deb.debian.org/debian/ bullseye contrib" > /etc/apt/sources.list.d/contrib.list) \
+  && (echo "deb-src http://deb.debian.org/debian/ bullseye contrib" > /etc/apt/sources.list.d/contrib.list)
+
+# runtime and build dependencies
+RUN apt-get update \
+  && apt-get upgrade -yqq \
+  && apt-get install -yqq \
+  curl wget ftp openssh-client \
+  nano less procps libcap2-bin \
+  libarchive13 libarchive-tools \
+  zip unzip arj unrar-free p7zip-full lhasa arc \
+  libnspr4 sudo \
+  build-essential libarchive-dev git \
+  libnspr4-dev libncurses5-dev python2 pkgconf \
+  && cd /tmp \
+  && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
+  && git config --global core.autocrlf false \
+  && apt-get -y autoremove \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && curl -fsSL https://deno.land/install.sh | sh \
+  && mkdir /sbbs

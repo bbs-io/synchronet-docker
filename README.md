@@ -7,35 +7,24 @@ issue with the build configuration that optimized for modern Intel instructions
 that break on Ryzen and possibly older Intel CPUs. If this doesn't run for you,
 you should stick to `3.18b` or move to a nightly release (once fixed).
 
-### 2022-05-02
+### 2022-09-04
 
-Updated image builds, should work for nightly once detection scripts are updated 
-as of today, for AMD Ryzen as well as Intel.  Self-build if you need this sooner.
+`linux/x86-64` builds only for now... ARM builds have been too problematic.
+
+Removed 3.19* from docker images, they were broken on AMD, also removed stale
+`nightly` builds ... working on restoring nightlies.
 
 **Breaking change** - You now only need to mount a single directory `.` to
 `/sbbs-data`, if you were using the example docker-compose, you should be able
 to simply switch out the volume path(s) for a single entry. If you are
 overriding the web directory, you should still mount this as `mydir:/sbbs/web`
-which will work properly inside the container.  The backup directory is the only 
-change that might break in practice.. instead of `/backup` `/sbbs-data/backup` 
-is used.
+which will work properly inside the container. Do not mount `./backup` to
+`/backup`, this will by symlinked to `/sbbs-data/backup`
 
 `/sbbs/scripts/sbbs` - will appear higher in the PATH statement before
 `/sbbs/exec/sbbs` this is intentional as it will run the initialization process
 before starting, this will appropriately link the directories in question from
 `/sbbs-data` to `/sbbs` inside the runtime instance.
-
-### 2022-04-26
-
-Working on updating the build and release scripts, this will change the
-behaviors slightly, but should mean a more clear setup/configuration and require
-less volume mounts for persistence. Hoping to have an update in the next few
-days, will update the date above as/if it changes.
-
-### 2022-02-22
-
-If you are using `:latest` from before 2022-02-22, it was a bleeding edge build
-from the mainline repository, you should change to `:nightly`\*
 
 ---
 
@@ -160,4 +149,4 @@ Other services/ports that may be enabled:
 
 This project is ISC Licensed, Synchronet itself is mostly GPL.
 
-<!-- Update: 2022-04-30 - restart automated builds -->
+<!-- Update: 2022-09-04 - restart automated builds -->

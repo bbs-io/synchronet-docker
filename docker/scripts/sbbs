@@ -3,11 +3,8 @@
 set -e
 NAME="Synchronet BBS"
 
-# Change to scripts directory
-cd -P -- "$(dirname -- "$0")"
-
 # Run initialization
-./sbbs-init
+"$(dirname -- "$0")/sbbs-init"
 
 cd ${SBBSCTRL}
 exec /sbbs/exec/sbbs "$@"

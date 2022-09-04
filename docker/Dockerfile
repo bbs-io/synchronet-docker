@@ -1,6 +1,7 @@
-# NAME bbs-io/synchronet
-# VERSION 3.18
 
+################################################################################
+# NAME bbs-io/synchronet
+#
 # BUILD ARGS
 #   docker build --build-arg NAME=VALUE ...
 #
@@ -10,14 +11,26 @@
 #       upstream: use https://gitlab.synchro.net/main/sbbs.git
 #   TAGNAME = specific tag/commit/branch to build from
 #       default: dailybuild_linux-x64 - latest nightly for default REPOURL above
+# ==============================================================================
 
 # Using bullseye-slim as baseline, to be able to use node based scripts.
 FROM debian:bullseye-slim as base
 
-ENV TERM=xterm
+# RUN echo "Building on $(uname -m)"
 
+# Build Arguments - GITHUB_TOKEN needed to determine current Deno version
+ARG GITHUB_TOKEN
 ARG DEBIAN_FRONTEND=noninteractive
 ONBUILD ARG DEBIAN_FRONTEND=noninteractive
+
+# Environment variables for use
+ENV TERM=xterm
+ENV DENO_DIR /deno-dir/
+ENV DENO_INSTALL_ROOT /usr/local
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+ENV PATH=$DENO_INSTALL/bin:$PATH:/sbbs/scripts:/sbbs/exec:
+
 
 # Utilities & Runtime Pre-requisites
 RUN (echo "deb http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/contrib.list) \
@@ -40,14 +53,20 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY --from=denoland/deno:bin /deno /usr/local/bin/deno
+# Setup Scripts and BuildScripts directories
+COPY scripts /sbbs/scripts
+COPY buildscripts /sbbs/buildscripts
+RUN chmod +x /sbbs/buildscripts/* \
+    && chmod +x /sbbs/scripts/*
+
+# Download Latest Deno
+RUN /sbbs/buildscripts/deno-download.sh
 
 
+
+################################################################################
 # Build Stage
 FROM base AS build
-
-ENV SBBSCTRL=/sbbs/ctrl
-ENV SBBSEXEC=/sbbs/exec
 
 # Build dependencies
 RUN apt-get update \
@@ -70,6 +89,12 @@ RUN echo "\n--------------------------------------------------------\nChecking o
     && git remote add origin $REPOURL \
     && git fetch --depth 1 origin $TAGNAME \
     && git checkout FETCH_HEAD
+
+# Copy Scripts and run pre-build script
+RUN deno cache --unstable /sbbs/scripts/*.ts \
+    && chmod +x /sbbs/scripts/* \
+    && chmod +x /sbbs/buildscripts/* \
+    && /sbbs/buildscripts/pre-build.ts
 
 # Build Synchronet - Install
 RUN cd ./install \
@@ -101,26 +126,20 @@ RUN cp /sbbs/exec/node /sbbs/exec/sbbsnode \
     && rm -rf /sbbs/src \
     && rm -rf /sbbs/repo
 
-# Copy utility scripts and run post-build script
-COPY scripts /sbbs/scripts
-RUN cd /sbbs/scripts \
-    && chmod +x /sbbs/scripts/* \
-    && /sbbs/scripts/post-build.ts \
-    && rm /sbbs/scripts/post-build.ts
+# Run post-build script
+RUN /sbbs/buildscripts/post-build.ts \
+    && rm -rf /sbbs/buildscripts
 
+
+
+################################################################################
+# Runtime Stage
 FROM base AS runtime
 
 COPY --from=build /sbbs /sbbs
 
 WORKDIR /sbbs
 
-# Environment variables for use
-ENV SBBSCTRL=/sbbs/ctrl
-ENV SBBSEXEC=/sbbs/exec
-ENV PATH=$PATH:/sbbs/scripts:/sbbs/exec:
-
-# Cache dependencies for sbbs scripts
-RUN deno cache --unstable /sbbs/scripts/*.ts
 
 # Start SBBS by Default
 CMD ["/sbbs/scripts/sbbs"]
