@@ -1,6 +1,7 @@
-# NAME bbs-io/synchronet
-# VERSION 3.18
 
+################################################################################
+# NAME bbs-io/synchronet
+#
 # BUILD ARGS
 #   docker build --build-arg NAME=VALUE ...
 #
@@ -10,14 +11,26 @@
 #       upstream: use https://gitlab.synchro.net/main/sbbs.git
 #   TAGNAME = specific tag/commit/branch to build from
 #       default: dailybuild_linux-x64 - latest nightly for default REPOURL above
+# ==============================================================================
 
 # Using bullseye-slim as baseline, to be able to use node based scripts.
 FROM debian:bullseye-slim as base
 
-ENV TERM=xterm
+# RUN echo "Building on $(uname -m)"
 
+# Build Arguments - GITHUB_TOKEN needed to determine current Deno version
+ARG GITHUB_TOKEN
 ARG DEBIAN_FRONTEND=noninteractive
 ONBUILD ARG DEBIAN_FRONTEND=noninteractive
+
+# Environment variables for use
+ENV TERM=xterm
+ENV DENO_DIR /deno-dir/
+ENV DENO_INSTALL_ROOT=/usr/local
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+ENV PATH=$DENO_INSTALL/bin:$PATH:/sbbs/scripts:/sbbs/exec:
+
 
 # Utilities & Runtime Pre-requisites
 RUN (echo "deb http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/contrib.list) \
@@ -34,20 +47,23 @@ RUN apt-get update \
     nano less procps libcap2-bin \
     libarchive13 libarchive-tools \
     zip unzip arj unrar-free p7zip-full lhasa arc \
-    libnspr4 sudo \
+    libnspr4 sudo jq \
     && cd /tmp \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY --from=denoland/deno:bin /deno /usr/local/bin/deno
+# Setup Scripts and BuildScripts directories and Download the latest Deno
+COPY buildscripts/deno-download.sh /tmp/deno-download.sh
+RUN chmod +x /tmp/deno-download.sh \
+    && /tmp/deno-download.sh \
+    && rm /tmp/deno-download.sh
 
 
+
+################################################################################
 # Build Stage
 FROM base AS build
-
-ENV SBBSCTRL=/sbbs/ctrl
-ENV SBBSEXEC=/sbbs/exec
 
 # Build dependencies
 RUN apt-get update \
@@ -80,53 +96,29 @@ RUN cd ./install \
 RUN cd ./src/sbbs3 \
     && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
 
-# capture hash and version
-RUN (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')"> /sbbs/exec/version.txt) \
-    && (echo "$(/sbbs/exec/sbbs version)" >> /sbbs/exec/version.txt)
 
-WORKDIR /sbbs/scripts
-RUN cp /sbbs/exec/node /sbbs/exec/sbbsnode \
-    && mkdir -p /sbbs/dist \
-    && mv /sbbs/ctrl /sbbs/dist/ctrl \
-    && mv /sbbs/docs /sbbs/dist/docs \
-    && mv /sbbs/node1 /sbbs/dist/node1 \
-    && mv /sbbs/text /sbbs/dist/text \
-    && mv /sbbs/xtrn /sbbs/dist/xtrn \
-    && mv /sbbs/web /sbbs/dist/web-runemaster \
-    && mv /sbbs/webv4 /sbbs/dist/web-ecweb4 \
-    && rm -rf /sbbs/node2 \
-    && rm -rf /sbbs/node3 \
-    && rm -rf /sbbs/node4 \
-    && rm -rf /sbbs/3rdp \
-    && rm -rf /sbbs/src \
-    && rm -rf /sbbs/repo
+# Run post-build script
+COPY buildscripts /sbbs/buildscripts
+RUN chmod +x /sbbs/buildscripts/* \
+    /sbbs/buildscripts/post-build.sh \
+    && rm -rf /sbbs/buildscripts
 
-# Copy utility scripts and run post-build script
-COPY scripts /sbbs/scripts
-RUN cd /sbbs/scripts \
-    && chmod +x /sbbs/scripts/* \
-    && /sbbs/scripts/post-build.ts \
-    && rm /sbbs/scripts/post-build.ts
 
+################################################################################
+# Runtime Stage
 FROM base AS runtime
 
 COPY --from=build /sbbs /sbbs
+COPY scripts /sbbs/scripts
 
 WORKDIR /sbbs
 
-# Environment variables for use
-ENV SBBSCTRL=/sbbs/ctrl
-ENV SBBSEXEC=/sbbs/exec
-ENV PATH=$PATH:/sbbs/scripts:/sbbs/exec:
-
-# Cache dependencies for sbbs scripts
-RUN deno cache --unstable /sbbs/scripts/*.ts
+# Show version built
+RUN chmod +x /sbbs/scripts/* \
+    && cat /sbbs/exec/version.txt && echo ""
 
 # Start SBBS by Default
 CMD ["/sbbs/scripts/sbbs"]
 
 # Declare expected volume mounts
 VOLUME [ "/sbbs-data" ]
-
-# Show version built
-RUN cat /sbbs/exec/version.txt && echo ""

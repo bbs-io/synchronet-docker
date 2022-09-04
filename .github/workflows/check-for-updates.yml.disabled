@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v2
         with:
-          deno-version: v1.x
-      - name: Run Update Checks
+          node-version: "14"
+      - name: Check release/nightly versions, tag if necessary
         run: |
           # Setup SSH Agent and Configure Git for publishing
           eval `ssh-agent -t 120 -s`
@@ -28,8 +28,10 @@ jobs:
           mkdir -p ~/.ssh/
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-          # Check and Tag Updates
-          .github/scripts/check.ts
+          # Run Update Checker
+          cd checker
+          npm ci
+          npm start
 
-          # Stop SSH Agent
+          # Shutdown SSH Agent
           ssh-agent -k
