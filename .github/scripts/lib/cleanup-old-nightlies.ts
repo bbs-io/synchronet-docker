@@ -1,4 +1,4 @@
-import { exec } from "https://deno.land/x/exec/mod.ts";
+import { exec } from "../deps.ts";
 
 async function getNightlyTags() {
   let data: any = await fetch(
