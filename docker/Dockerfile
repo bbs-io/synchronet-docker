@@ -25,11 +25,11 @@ ONBUILD ARG DEBIAN_FRONTEND=noninteractive
 
 # Environment variables for use
 ENV TERM=xterm
-ENV DENO_DIR /deno-dir/
-ENV DENO_INSTALL_ROOT=/usr/local
+ENV DENO_DIR /sbbs/data/.deno
+ENV DENO_INSTALL_ROOT=$DENO_DIR
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
-ENV PATH=$DENO_INSTALL/bin:$PATH:/sbbs/scripts:/sbbs/exec:
+ENV PATH=$DENO_INSTALL_ROOT/bin:$PATH:/sbbs/scripts:/sbbs/exec:
 
 
 # Utilities & Runtime Pre-requisites
@@ -47,7 +47,7 @@ RUN apt-get update \
     nano less procps libcap2-bin \
     libarchive13 libarchive-tools \
     zip unzip arj unrar-free p7zip-full lhasa arc \
-    libnspr4 sudo jq \
+    libnspr4 sudo jq telnet \
     && cd /tmp \
     && apt-get -y autoremove \
     && apt-get clean \
@@ -99,9 +99,12 @@ RUN cd ./src/sbbs3 \
 
 # Run post-build script
 COPY buildscripts /sbbs/buildscripts
-RUN chmod +x /sbbs/buildscripts/* \
-    /sbbs/buildscripts/post-build.sh \
-    && rm -rf /sbbs/buildscripts
+COPY scripts /sbbs/scripts
+RUN chmod +x /sbbs/buildscripts/*
+RUN chmod +x /sbbs/scripts/*
+RUN /sbbs/buildscripts/post-build.sh
+RUN rm -rf /sbbs/buildscripts
+RUN cat /sbbs/exec/version.txt && echo ""
 
 
 ################################################################################
@@ -109,13 +112,8 @@ RUN chmod +x /sbbs/buildscripts/* \
 FROM base AS runtime
 
 COPY --from=build /sbbs /sbbs
-COPY scripts /sbbs/scripts
 
 WORKDIR /sbbs
-
-# Show version built
-RUN chmod +x /sbbs/scripts/* \
-    && cat /sbbs/exec/version.txt && echo ""
 
 # Start SBBS by Default
 CMD ["/sbbs/scripts/sbbs"]

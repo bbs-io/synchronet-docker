@@ -54,11 +54,25 @@ much easier to work with. Note: you can access your WSL2 instances in explorer
 via `\\wsl$`. You may want to add your SBBS volume directory to your Quick
 access shortcuts.
 
+## First Run
+
+For your first run, you may want to run the Synchronet Configuration Program
+(scfg) before you proceed to start any services.
+
+    mkdir -p ~/sbbs
+    cd ~/sbbs
+    docker run --rm -it -v "$PWD:/sbbs-data" bbsio/synchronet:latest scfg
+
+This will create your sbbs storage directory inside your profile, and run the
+synchronet configuration program with that directory connected. This container
+is setup so that the data directories are initialized on first run of (`scfg` or
+`sbbs`) if necessary.
+
 ## Docker Compose
 
 The easiest way to get running is with docker-compose.
 
-    mkdir ~/sbbs
+    mkdir -p ~/sbbs
     cd ~/sbbs
     wget -O docker-compose.yml https://raw.githubusercontent.com/bbs-io/synchronet-docker/master/docker-compose.yml
     docker-compose up -d
@@ -97,6 +111,8 @@ expected. Most directories will be populated on first run.
   - `backup/defaults/` - will be initialized with the default build for
     synchronet on first run, or upgrade.
   - `/ctrl` - note: `text.dat` will be overwritten on updated versions.
+  - `data` - Synchronet's default data storage directory, includes file
+    directories.
   - `/sbbs/text`
   - `/sbbs/web` - default populated from `/backup/defaults/web-ecweb4`
   - `data`

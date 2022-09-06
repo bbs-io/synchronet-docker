@@ -4,7 +4,7 @@
 cd -P -- "$(dirname -- "$0")"
 
 # Run initialization
-./sbbs-init
+./sbbs-init || exit 1
 
 cd /sbbs/ctrl
 

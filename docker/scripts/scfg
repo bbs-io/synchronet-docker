@@ -7,4 +7,4 @@ NAME="Synchronet BBS"
 "$(dirname -- "$0")/sbbs-init" || exit 1
 
 cd ${SBBSCTRL}
-exec /sbbs/exec/sbbs "$@" || exit 1
+exec /sbbs/exec/scfg "$@" || exit 1

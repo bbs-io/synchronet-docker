@@ -96,6 +96,26 @@ async function backupDist() {
   }
 }
 
+async function runUpgradeJs() {
+  const proc = await Deno.run({
+    cmd: ["jsexec", "-n", "/sbbs/exec/update.js"],
+    stdout: "piped",
+    stderr: "piped",
+  });
+
+  const status = await proc.status();
+  const stdout = new TextDecoder().decode(await proc.output());
+  const stderr = new TextDecoder().decode(await proc.stderrOutput());
+
+  if (!status.success) {
+    throw Object.assign(new Error("Unable to retrieve node count."), {
+      status,
+      stdout,
+      stderr,
+    });
+  }
+}
+
 async function upgrade() {
   const now = new Date().toISOString().replace(/\D/g, "").substr(0, 14);
 
@@ -128,6 +148,7 @@ async function checkAll() {
     ensureSymlinkSync(`/sbbs-data/backup`, `/backup`);
 
     hydrateAndLink("ctrl", "ctrl");
+    hydrateAndLink("data", "data");
     hydrateAndLink("xtrn", "xtrn");
     hydrateAndLink("text", "text");
     hydrateAndLink("web-ecweb4", "web");
@@ -136,15 +157,17 @@ async function checkAll() {
     checkNodes();
 
     const oldVersion = await Deno.readTextFile(`/sbbs/ctrl/version.txt`).catch(
-      () => null
+      () => ""
     );
     const newVersion = await Deno.readTextFile(`/sbbs/exec/version.txt`).catch(
-      () => null
+      () => ""
     );
 
     if (oldVersion != newVersion) {
       upgrade();
-      await delay(1000);
+      await delay(500);
+      if (oldVersion) await runUpgradeJs();
+      await delay(500);
     }
   } finally {
     await Deno.funlock(f.rid).catch(() => {});
