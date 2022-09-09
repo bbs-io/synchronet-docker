@@ -174,8 +174,13 @@ Update: 2022-09-04 - restart automated builds
 
 docker buildx build --progress plain \
   --build-arg "GITHUB_TOKEN=$GITHUB_TOKEN" \
+  -t bbsio/synchronet:latest \
+  -t bbsio/synchronet:3 \
+  -t bbsio/synchronet:3.19 \
   -t bbsio/synchronet:nightly \
   -t bbsio/synchronet:nightly-20220907 \
+  -t bbsio/synchronet:nightly-20220905 \
+  -t bbsio/synchronet:nightly-20220903 \
   --push \
   --platform linux/amd64 \
   ./docker
