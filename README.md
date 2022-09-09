@@ -101,25 +101,30 @@ docker exec -it sbbs sbbs-access
 
 ## Volumes
 
-In order to better support portability, the following volume mounts are
-expected. Most directories will be populated on first run.
+In order to better support portability, you should mount your storage directory
+to `/sbbs-data/` inside the running container. Most directories will be
+populated on first run.
 
-- `/sbbs-data/` - All sbbs directories should be mounted under this path, they
-  will be initialized if they do not already exist...
-  - `backup/defaults/` - will be initialized with the default build for
-    synchronet on first run, or upgrade.
-  - `ctrl/` - note: `text.dat` will be overwritten on updated versions.
-  - `data/` - Synchronet's default data storage directory, includes file
-    directories.
-  - `text/`
-  - `web/` - default populated from `/backup/defaults/web-ecweb4`
-  - `data/`
-  - `fido/`
-  - `xtrn/` - external programs, will populate directories that don't exist on
-    first run or update
-  - `mods/` - your customizations, empty by default
-  - `nodes/node{n}` - shared nodes directory (mapped to `/sbbs/node{n}`
-    internally).
+Under your `/sbbs-data/` directory, the following directories will be populated.
+
+- `backup/defaults/` - will be initialized with the default build for synchronet
+  on first run, or upgrade.
+- `ctrl/` - note: `text.dat` will be overwritten on updated versions.
+- `data/` - Synchronet's default data storage directory, includes file
+  directories.
+- `text/`
+- `web/` - default populated from `/backup/defaults/web-ecweb4`
+- `data/`
+- `fido/`
+- `xtrn/` - external programs, will populate directories that don't exist on
+  first run or update
+- `mods/` - your customizations, empty by default
+- `nodes/node{n}` - shared nodes directory (mapped to `/sbbs/node{n}`
+  internally).
+
+**WARNING:** If you are bringing in a configuration from outside this project,
+you should make sure your `ctrl/sbbs.ini` is _NOT_ binding to IPv6 addresses,
+this will likely cause problems running in the container.
 
 ## Ports
 
