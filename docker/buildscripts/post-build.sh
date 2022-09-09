@@ -8,10 +8,6 @@
     && (echo "" >> /sbbs/exec/version) \
     && (cd /sbbs/repo; echo "Git Hash $(git log -1 --format='%H')" >> /sbbs/exec/version.txt)
 
-# cache runtime dependencies
-mkdir -p "$DENO_DIR"
-deno cache --unstable /sbbs/scripts/*.ts
-
 # cleanup output to /sbbs/dist
 cp /sbbs/exec/node /sbbs/exec/sbbsnode
 mkdir -p /sbbs/dist
@@ -23,6 +19,7 @@ mv /sbbs/web /sbbs/dist/web-runemaster
 mv /sbbs/webv4 /sbbs/dist/web-ecweb4
 mv /sbbs/data /sbbs/dist/data
 mv /sbbs/node1 /sbbs/dist/node1
+rm -rf /sbbs/data
 rm -rf /sbbs/node2
 rm -rf /sbbs/node3
 rm -rf /sbbs/node4

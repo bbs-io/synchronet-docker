@@ -31,10 +31,10 @@ if (GITHUB_REF.indexOf("release-") >= 0) {
   }
   sbbs = release.tag;
   tags.push(
-    `latest`,
-    `${parts[1]}`,
+    `${parts[1]}.${parts[2]}${parts[3]}`,
     `${parts[1]}.${parts[2]}`,
-    `${parts[1]}.${parts[2]}${parts[3]}`
+    `${parts[1]}`,
+    `latest`
   );
 }
 

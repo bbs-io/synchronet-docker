@@ -150,7 +150,6 @@ async function checkAll() {
     ensureSymlinkSync(`/sbbs-data/backup`, `/backup`);
 
     hydrateAndLink("ctrl", "ctrl");
-    hydrateAndLink("data", "data");
     hydrateAndLink("xtrn", "xtrn");
     hydrateAndLink("text", "text");
     hydrateAndLink("web-ecweb4", "web");

@@ -1,5 +1,9 @@
 #! /bin/sh
 
+# /sbbs/data setup first
+[ ! -d "/sbbs-data/data" ] && mkdir -p /sbbs-data/data/.deno
+[ ! -d "/sbbs/data" ] && ln -s /sbbs-data/data /sbbs
+
 # Change to scripts directory
 cd -P -- "$(dirname -- "$0")"
 
