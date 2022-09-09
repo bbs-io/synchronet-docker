@@ -29,17 +29,24 @@ const dirExists = (list: Deno.DirEntry[], name: string): boolean =>
   !!list.find((x) => (x.isDirectory || x.isSymlink) && x.name === name);
 
 function hydrateAndLink(distName: string, sbbsName: string) {
-  if (!dirExists(dirSbbs, sbbsName)) {
-    if (!dirExists(dirData, sbbsName)) {
-      if (!distName) {
-        // no distName specified - create empty directory
-        Deno.mkdirSync(`/sbbs-data/${sbbsName}`, { recursive: true });
-      } else {
-        copySync(`/sbbs/dist/${distName}`, `/sbbs-data/${sbbsName}`);
-      }
-    }
-    ensureSymlinkSync(`/sbbs-data/${sbbsName}`, `/sbbs/${sbbsName}`);
+  if (dirExists(dirSbbs, sbbsName)) {
+    // already exists
+    return;
   }
+  console.log(`Missing: /sbbs/${sbbsName}`);
+  if (!dirExists(dirData, sbbsName)) {
+    // console.log(`Missing /sbbs-data/${sbbsName}`);
+    if (!distName) {
+      // no distName specified - create empty directory
+      // console.log(`Creating /sbbs-data/${sbbsName}`);
+      Deno.mkdirSync(`/sbbs-data/${sbbsName}`, { recursive: true });
+    } else {
+      // console.log(`Copying /sbbs/dist/${distName} to /sbbs-data/${sbbsName}`);
+      copySync(`/sbbs/dist/${distName}`, `/sbbs-data/${sbbsName}`);
+    }
+  }
+  // console.log(`Symlink /sbbs/${sbbsName} to /sbbs-data/${sbbsName}`);
+  ensureSymlinkSync(`/sbbs-data/${sbbsName}`, `/sbbs/${sbbsName}`);
 }
 
 function checkNode(dirNodes: Deno.DirEntry[], n: number) {

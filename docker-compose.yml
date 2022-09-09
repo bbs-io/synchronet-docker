@@ -70,7 +70,7 @@ services:
   #       delay: 3s
   #   volumes:
   #     - $PWD:/sbbs-data
-  #   command: jsexec /sbbs/exec/ircd.js
+  #   command: sbbs-run jsexec /sbbs/exec/ircd.js
   #   ports:
   #     - 6667:6667
   # sbbs_ecweb:
@@ -83,6 +83,7 @@ services:
   #       delay: 3s
   #   volumes:
   #     - $PWD:/sbbs-data
+  #     - $PWD/web-ecweb4:/sbbs-data/web
   #     - $PWD/web-ecweb4:/sbbs/web
   #   command: /sbbs/scripts/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-ecweb4.ini
   #   ports:
@@ -98,6 +99,7 @@ services:
   #       delay: 3s
   #   volumes:
   #     - $PWD:/sbbs-data
+  #     - $PWD/web-runemaster:/sbbs-data/web
   #     - $PWD/web-runemaster:/sbbs/web
   #   command: /sbbs/scripts/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-runemaster.ini
   #   ports:

@@ -3,8 +3,13 @@
 cd /tmp
 
 ARCH=$(uname -m)
-# VERSION=$(curl --header "authorization: Bearer $GH_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | grep "tag_name" | cut -d : -f 2 | tr -d \"\,[:space:])
-VERSION=$(curl --header "authorization: Bearer $GH_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | jq -r '.tag_name')
+
+if [ -z "$GH_TOKEN" ]
+then
+      VERSION=$(curl -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | jq -r '.tag_name')
+else
+      VERSION=$(curl --header "authorization: Bearer $GH_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | jq -r '.tag_name')
+fi
 
 echo ""
 echo "Retrieving Deno: $VERSION $ARCH"
@@ -17,5 +22,3 @@ echo "Retrieving Deno: $VERSION $ARCH"
 
 # extract deno.zip to /usr/local/bin/deno
 [ -f "deno.zip" ] && unzip deno.zip && rm deno.zip && mv deno /usr/local/bin/deno
-
-mkdir -p /deno-dir
