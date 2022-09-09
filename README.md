@@ -1,33 +1,5 @@
 # Synchronet BBS Software
 
-## README - WARNING
-
-The current `:latest`, `:3.19b`, `:3.19`, `:3` tags are Intel only. There was an
-issue with the build configuration that optimized for modern Intel instructions
-that break on Ryzen and possibly older Intel CPUs. If this doesn't run for you,
-you should stick to `3.18b` or move to a nightly release (once fixed).
-
-### 2022-09-04
-
-`linux/x86-64` builds only for now... ARM builds have been too problematic.
-
-Removed 3.19* from docker images, they were broken on AMD, also removed stale
-`nightly` builds ... working on restoring nightlies.
-
-**Breaking change** - You now only need to mount a single directory `.` to
-`/sbbs-data`, if you were using the example docker-compose, you should be able
-to simply switch out the volume path(s) for a single entry. If you are
-overriding the web directory, you should still mount this as `mydir:/sbbs/web`
-which will work properly inside the container. Do not mount `./backup` to
-`/backup`, this will by symlinked to `/sbbs-data/backup`
-
-`/sbbs/scripts/sbbs` - will appear higher in the PATH statement before
-`/sbbs/exec/sbbs` this is intentional as it will run the initialization process
-before starting, this will appropriately link the directories in question from
-`/sbbs-data` to `/sbbs` inside the runtime instance.
-
----
-
 **[Synchronet](http://wiki.synchro.net/)** is a modern bulletin board software
 supporting classic terminal interfaces as well as modern web interfaces and
 other services.
@@ -44,6 +16,32 @@ For the `@bbs/synchronet` utility,
 - `#`, `#.##`, `#.##x` - Major, Minor, Patch options
 - `:nightly` - The latest nightly
 - `:nightly-YYYYMMDD` - Specific nightly (ex: `nightly-20210222`)
+
+## UPDATES
+
+### 2022-09-08
+
+- `linux/x86-64` builds only for now... ARM builds have been too problematic.
+- Removed 3.19b from docker images, they were broken on AMD and some Intel
+  platforms.
+- Stale Nightlies removed.
+- `latest`, `3` and `3.19` are from a recent nightly commit.
+- `nightly` builds are working again, the latest commit does not match manually
+  pushed dates, this should clear when there's a future nightly commit.
+
+## Breaking change
+
+You now only need to mount a single directory `.` to `/sbbs-data`, if you were
+using the example docker-compose, you should be able to simply switch out the
+volume path(s) for a single entry. If you are overriding the web directory, you
+should still mount this as `mydir:/sbbs/web` which will work properly inside the
+container. Do not mount `./backup` to `/backup`, this will by symlinked to
+`/sbbs-data/backup`
+
+`/sbbs/scripts/sbbs` - will appear higher in the PATH statement before
+`/sbbs/exec/sbbs` this is intentional as it will run the initialization process
+before starting, this will appropriately link the directories in question from
+`/sbbs-data` to `/sbbs` inside the runtime instance.
 
 ### Windows Users
 
