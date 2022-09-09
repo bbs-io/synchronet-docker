@@ -5,8 +5,9 @@ import { baseDir } from "./deps.ts";
 // force workflow for now
 const GITHUB_REF = Deno.env.get("GITHUB_REF") || "nightly-";
 
-if (GITHUB_REF === "release-sbbs319b") {
+if (GITHUB_REF.indexOf("release-sbbs319b") >= 0) {
   // don't publish this broken build release
+  console.log(`Do not publish 3.19b`);
   Deno.exit();
 }
 
