@@ -18,8 +18,8 @@ FROM debian:bullseye-slim as base
 
 # RUN echo "Building on $(uname -m)"
 
-# Build Arguments - GITHUB_TOKEN needed to determine current Deno version
-ARG GITHUB_TOKEN
+# Build Arguments - GH_TOKEN needed to determine current Deno version
+ARG GH_TOKEN
 ARG DEBIAN_FRONTEND=noninteractive
 ONBUILD ARG DEBIAN_FRONTEND=noninteractive
 

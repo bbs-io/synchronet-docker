@@ -3,8 +3,8 @@
 cd /tmp
 
 ARCH=$(uname -m)
-# VERSION=$(curl --header "authorization: Bearer $GITHUB_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | grep "tag_name" | cut -d : -f 2 | tr -d \"\,[:space:])
-VERSION=$(curl --header "authorization: Bearer $GITHUB_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | jq -r '.tag_name')
+# VERSION=$(curl --header "authorization: Bearer $GH_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | grep "tag_name" | cut -d : -f 2 | tr -d \"\,[:space:])
+VERSION=$(curl --header "authorization: Bearer $GH_TOKEN" -s https://api.github.com/repos/LukeChannings/deno-arm64/releases/latest | jq -r '.tag_name')
 
 echo ""
 echo "Retrieving Deno: $VERSION $ARCH"

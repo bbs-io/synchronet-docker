@@ -69,10 +69,7 @@ services:
   #       condition: any
   #       delay: 3s
   #   volumes:
-  #     - $PWD/ctrl:/sbbs/ctrl
-  #     - $PWD/text:/sbbs/text
-  #     - $PWD/data:/sbbs/data
-  #     - $PWD/mods:/sbbs/mods
+  #     - $PWD:/sbbs-data
   #   command: jsexec /sbbs/exec/ircd.js
   #   ports:
   #     - 6667:6667
@@ -85,12 +82,9 @@ services:
   #       condition: any
   #       delay: 3s
   #   volumes:
-  #     - $PWD/ctrl:/sbbs/ctrl
-  #     - $PWD/text:/sbbs/text
-  #     - $PWD/data:/sbbs/data
-  #     - $PWD/mods:/sbbs/mods
+  #     - $PWD:/sbbs-data
   #     - $PWD/web-ecweb4:/sbbs/web
-  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-ecweb4.ini"
+  #   command: /sbbs/scripts/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-ecweb4.ini
   #   ports:
   #     - 51080:80
   #     - 51443:443
@@ -103,12 +97,9 @@ services:
   #       condition: any
   #       delay: 3s
   #   volumes:
-  #     - $PWD/ctrl:/sbbs/ctrl
-  #     - $PWD/text:/sbbs/text
-  #     - $PWD/data:/sbbs/data
-  #     - $PWD/mods:/sbbs/mods
+  #     - $PWD:/sbbs-data
   #     - $PWD/web-runemaster:/sbbs/web
-  #   command: bash -c "sleep 10 && /sbbs/exec/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-runemaster.ini"
+  #   command: /sbbs/scripts/sbbs t- f- m- s- $PWD/ctrl/sbbs.web-runemaster.ini
   #   ports:
   #     - 52080:80
   #     - 52443:443

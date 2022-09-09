@@ -156,7 +156,6 @@ async function checkAll() {
     hydrateAndLink("web-ecweb4", "web");
     hydrateAndLink("", "mods");
     hydrateAndLink("", "fido");
-    hydrateAndLink("", "temp");
     checkNodes();
 
     const oldVersion = await Deno.readTextFile(`/sbbs/ctrl/version.txt`).catch(

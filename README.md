@@ -173,7 +173,7 @@ This project is ISC Licensed, Synchronet itself is mostly GPL.
 Update: 2022-09-04 - restart automated builds
 
 docker buildx build --progress plain \
-  --build-arg "GITHUB_TOKEN=$GITHUB_TOKEN" \
+  --build-arg "GH_TOKEN=$GH_TOKEN" \
   -t bbsio/synchronet:latest \
   -t bbsio/synchronet:3 \
   -t bbsio/synchronet:3.19 \

@@ -41,6 +41,7 @@ jobs:
           tags: ${{ steps.tags.outputs.docker_tags }}
           build-args: |
             TAGNAME=${{ steps.tags.outputs.sbbs_tagname }}
+            GH_TOKEN=${{ secrets.GH_TOKEN }}
       - name: Image digest
         if: ${{ steps.tags.outputs.docker_tags }}
         run: echo ${{ steps.docker_build.outputs.digest }}
