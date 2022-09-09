@@ -132,7 +132,9 @@ async function upgrade() {
   }
 
   await backupDist();
-  copySync(`/sbbs/exec/version.txt`, `/sbbs/ctrl/version.txt`);
+  copySync(`/sbbs/exec/version.txt`, `/sbbs/ctrl/version.txt`, {
+    overwrite: true,
+  });
 }
 
 async function checkAll() {
@@ -154,6 +156,7 @@ async function checkAll() {
     hydrateAndLink("web-ecweb4", "web");
     hydrateAndLink("", "mods");
     hydrateAndLink("", "fido");
+    hydrateAndLink("", "temp");
     checkNodes();
 
     const oldVersion = await Deno.readTextFile(`/sbbs/ctrl/version.txt`).catch(
