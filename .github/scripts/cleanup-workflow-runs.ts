@@ -7,7 +7,7 @@ const headers = {
 
 async function getRuns() {
   const data: any = await fetch(
-    "https://api.github.com/repos/bbs-io/synchronet-docker/actions/runs?per_page=500",
+    "https://api.github.com/repos/bbs-io/synchronet-docker/actions/runs?per_page=100",
     {
       headers,
     }
