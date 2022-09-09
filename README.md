@@ -166,4 +166,14 @@ Other services/ports that may be enabled:
 
 This project is ISC Licensed, Synchronet itself is mostly GPL.
 
-<!-- Update: 2022-09-04 - restart automated builds -->
+<!--
+Update: 2022-09-04 - restart automated builds
+
+docker buildx build --progress plain \
+  --build-arg "GITHUB_TOKEN=$GITHUB_TOKEN" \
+  -t bbsio/synchronet:nightly \
+  -t bbsio/synchronet:nightly-20220907 \
+  --push \
+  --platform linux/amd64 \
+  ./docker
+-->

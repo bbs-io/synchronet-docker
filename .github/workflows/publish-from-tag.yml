@@ -10,19 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: denoland/setup-deno@v1
         with:
-          node-version: "14"
+          deno-version: v1.x
       - name: Set Docker and SBBS Tags
         id: tags
         run: |
-          docker pull node:14-stretch
-          cd checker
-          npm ci
+          docker pull debian:bullseye-slim
           echo "GITHUB_REF=$GITHUB_REF"
-          node -r esm ./get-publish-tags
+          ./.github/scripts/load-publish-tags.ts || exit 1
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+        if: ${{ steps.tags.outputs.docker_tags }}
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -33,6 +32,7 @@ jobs:
       - name: Docker Build and Push to DockerHub
         id: docker_build
         uses: docker/build-push-action@v2
+        if: ${{ steps.tags.outputs.docker_tags }}
         with:
           # platforms: linux/amd64,linux/arm64,linux/arm/v7
           platforms: linux/amd64
@@ -42,4 +42,5 @@ jobs:
           build-args: |
             TAGNAME=${{ steps.tags.outputs.sbbs_tagname }}
       - name: Image digest
+        if: ${{ steps.tags.outputs.docker_tags }}
         run: echo ${{ steps.docker_build.outputs.digest }}

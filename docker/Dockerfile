@@ -104,7 +104,6 @@ RUN chmod +x /sbbs/buildscripts/*
 RUN chmod +x /sbbs/scripts/*
 RUN /sbbs/buildscripts/post-build.sh
 RUN rm -rf /sbbs/buildscripts
-RUN cat /sbbs/exec/version.txt && echo ""
 
 
 ################################################################################
@@ -120,3 +119,7 @@ CMD ["/sbbs/scripts/sbbs"]
 
 # Declare expected volume mounts
 VOLUME [ "/sbbs-data" ]
+
+
+# Output Version(s)
+RUN echo "\n" && cat /sbbs/exec/version.txt && echo "\n"

@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno -q run --unstable --allow-run --allow-read --allow-write
 
-import { copySync } from "https://deno.land/std@0.154.0/fs/copy.ts";
 import {
+  copySync,
   ensureFileSync,
   ensureDirSync,
   ensureSymlinkSync as _ensureSymLinkSync,

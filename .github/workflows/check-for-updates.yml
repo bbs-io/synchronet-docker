@@ -29,7 +29,7 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
           # Check and Tag Updates
-          .github/scripts/check.ts
+          .github/scripts/check.ts || exit 1
 
           # Stop SSH Agent
           ssh-agent -k
