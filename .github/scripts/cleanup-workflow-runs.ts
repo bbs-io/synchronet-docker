@@ -2,7 +2,7 @@
 
 const headers = {
   Accept: "application/vnd.github.v3+json",
-  Authorization: `Bearer ${Deno.env.get("GH_TOKEN")}`,
+  Authorization: `Bearer ${Deno.env.get("GITHUB_TOKEN")}`,
 };
 
 async function getRuns() {
