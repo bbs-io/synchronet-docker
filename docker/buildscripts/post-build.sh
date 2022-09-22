@@ -19,7 +19,6 @@ mv /sbbs/web /sbbs/dist/web-runemaster
 mv /sbbs/webv4 /sbbs/dist/web-ecweb4
 mv /sbbs/data /sbbs/dist/data
 mv /sbbs/node1 /sbbs/dist/node1
-rm -rf /sbbs/data
 rm -rf /sbbs/node2
 rm -rf /sbbs/node3
 rm -rf /sbbs/node4
