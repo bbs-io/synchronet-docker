@@ -19,6 +19,11 @@ For the `@bbs/synchronet` utility,
 
 ## UPDATES
 
+### 2022-10-14
+
+- Will now create and run as user `sbbs(1000)` and group `sbbs(1000)` instead of
+  root. Passwordless sudo is setup in the environment
+
 ### 2022-09-08
 
 - `linux/x86-64` builds only for now... ARM builds have been too problematic.

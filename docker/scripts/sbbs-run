@@ -1,11 +1,6 @@
 #!/bin/sh
 
-# Change to scripts directory
-cd -P -- "$(dirname -- "$0")"
-
 # Run initialization
-./sbbs-init || exit 1
+"$(dirname -- "$0")/sbbs-init" || exit $?
 
-cd /sbbs/ctrl
-
-"$@"
+"$@" || exit $?

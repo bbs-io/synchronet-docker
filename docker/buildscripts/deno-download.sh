@@ -21,4 +21,4 @@ echo "Retrieving Deno: $VERSION $ARCH"
 [ "$ARCH" == "aarch64" ] && curl -Lsf "https://github.com/LukeChannings/deno-arm64/releases/download/$VERSION/deno-linux-arm64.zip" -o deno.zip || true
 
 # extract deno.zip to /usr/local/bin/deno
-[ -f "deno.zip" ] && unzip deno.zip && rm deno.zip && mv deno /usr/local/bin/deno
+[ -f "deno.zip" ] && unzip deno.zip && rm deno.zip && mv deno /usr/local/bin/deno && chmod +x /usr/local/bin/deno

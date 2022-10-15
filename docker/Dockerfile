@@ -25,11 +25,11 @@ ONBUILD ARG DEBIAN_FRONTEND=noninteractive
 
 # Environment variables for use
 ENV TERM=xterm
-ENV DENO_DIR /sbbs/data/.deno
-ENV DENO_INSTALL_ROOT=$DENO_DIR
+ENV DENO_DIR /sbbs-data/.deno
+ENV DENO_INSTALL_ROOT=$DENO_DIR/bin
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
-ENV PATH=$DENO_INSTALL_ROOT/bin:$PATH:/sbbs/scripts:/sbbs/exec:
+ENV PATH=$DENO_INSTALL_ROOT:$PATH:/sbbs/scripts:/sbbs/exec:
 
 
 # Utilities & Runtime Pre-requisites
@@ -43,12 +43,11 @@ RUN (echo "deb http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.l
 RUN apt-get update \
     && apt-get upgrade -yqq \
     && apt-get install -yqq \
-    curl wget ftp openssh-client \
+    sudo curl wget ftp openssh-client \
     nano less procps libcap2-bin \
     libarchive13 libarchive-tools \
     zip unzip arj unrar-free p7zip-full lhasa arc \
-    libnspr4 sudo jq telnet \
-    && cd /tmp \
+    libnspr4 jq telnet libffi7 \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -59,16 +58,24 @@ RUN chmod +x /tmp/deno-download.sh \
     && /tmp/deno-download.sh \
     && rm /tmp/deno-download.sh
 
+# Create sbbs user/group - passwordless sudo
+RUN addgroup --gid 1000 sbbs \
+    && adduser --disabled-password --shell /bin/bash --uid 1000 --gid 1000 --gecos '' sbbs \
+    && adduser sbbs sudo \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
 ################################################################################
 # Build Stage
 FROM base AS build
 
+ARG REPOURL=https://github.com/SynchronetBBS/sbbs.git
+ARG TAGNAME=dailybuild_linux-x64
+
 # Build dependencies
 RUN apt-get update \
     && apt-get install -yqq \
-    build-essential libarchive-dev git \
+    build-essential libarchive-dev libffi-dev git \
     libnspr4-dev libncurses5-dev python2 pkgconf \
     && cd /tmp \
     && (curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash) \
@@ -79,8 +86,6 @@ RUN apt-get update \
 
 # Shallow git checkout, adjusts TAGNAME for "nightly" or "release"
 WORKDIR /sbbs/repo
-ARG REPOURL=https://github.com/SynchronetBBS/sbbs.git
-ARG TAGNAME=dailybuild_linux-x64
 RUN echo "\n--------------------------------------------------------\nChecking out $TAGNAME\n" \
     && git init \
     && git remote add origin $REPOURL \
@@ -100,26 +105,30 @@ RUN cd ./src/sbbs3 \
 # Run post-build script
 COPY buildscripts /sbbs/buildscripts
 COPY scripts /sbbs/scripts
-RUN chmod +x /sbbs/buildscripts/*
-RUN chmod +x /sbbs/scripts/*
-RUN /sbbs/buildscripts/post-build.sh
-RUN rm -rf /sbbs/buildscripts
-
+RUN chmod +x /sbbs/buildscripts/* \
+    && chmod +x /sbbs/scripts/* \
+    && /sbbs/buildscripts/post-build.sh \
+    && rm -rf /sbbs/buildscripts
 
 ################################################################################
 # Runtime Stage
 FROM base AS runtime
 
+# Copy Built Synchronet
 COPY --from=build /sbbs /sbbs
 
 WORKDIR /sbbs
+
+# User created in base container
+USER sbbs
+
+# Output Version(s)
+RUN sudo chown -R sbbs:sbbs /sbbs \
+    && sudo chmod -R a+rwX /sbbs \
+    && echo "\n" && cat /sbbs/exec/version.txt && echo "\n"
 
 # Start SBBS by Default
 CMD ["/sbbs/scripts/sbbs"]
 
 # Declare expected volume mounts
 VOLUME [ "/sbbs-data" ]
-
-
-# Output Version(s)
-RUN echo "\n" && cat /sbbs/exec/version.txt && echo "\n"

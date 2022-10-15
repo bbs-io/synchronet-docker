@@ -1,11 +1,22 @@
 #! /bin/sh
 
+SCRIPTSDIR="$(dirname -- "$0")"
+
 # /sbbs/data setup first
-[ ! -d "/sbbs-data/data" ] && mkdir -p /sbbs-data/data/.deno
-[ ! -d "/sbbs/data" ] && ln -s /sbbs-data/data /sbbs
+mkdir -p /sbbs-data/.deno/gen
+mkdir -p /sbbs-data/.deno/deps
+mkdir -p /sbbs-data/.deno/bin
+mkdir -p /sbbs-data/data
+[ ! -d "/sbbs/data" ] && sudo ln -s /sbbs-data/data /sbbs
 
-# Change to scripts directory
-cd -P -- "$(dirname -- "$0")"
+# Run initialization
+sudo deno -q run \
+  --import-map $SCRIPTSDIR/vendor/import_map.json \
+  --unstable --allow-run --allow-read --allow-write \
+  $SCRIPTSDIR/init.ts || exit $?
 
-./init.ts || exit 1
-chmod -R a+rwX /sbbs-data
+# correct ownership and permissions after general initialization
+UID=$(id -u)
+GID=$(id -g)
+sudo chown -R $UID:$GID /sbbs-data || exit $?
+sudo chmod -R a+rwX /sbbs-data || exit $?

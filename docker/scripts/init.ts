@@ -4,18 +4,8 @@ import {
   copySync,
   ensureFileSync,
   ensureDirSync,
-  ensureSymlinkSync as _ensureSymLinkSync,
-} from "https://deno.land/std@0.154.0/fs/mod.ts";
-
-const ensureSymlinkSync = (src: string | URL, dest: string | URL) => {
-  try {
-    _ensureSymLinkSync(src, dest);
-  } catch (error) {
-    if (error.code != "EEXIST") {
-      throw error;
-    }
-  }
-};
+  ensureSymlinkSync,
+} from "https://deno.land/std@0.159.0/fs/mod.ts";
 
 // get directory entries to start from
 const dirDist = Array.from(Deno.readDirSync("/sbbs/dist"));
@@ -33,7 +23,8 @@ function hydrateAndLink(distName: string, sbbsName: string) {
     // already exists
     return;
   }
-  console.log(`Missing: /sbbs/${sbbsName}`);
+
+  // console.log(`Missing: /sbbs/${sbbsName}`);
   if (!dirExists(dirData, sbbsName)) {
     // console.log(`Missing /sbbs-data/${sbbsName}`);
     if (!distName) {
@@ -60,7 +51,7 @@ function checkNode(dirNodes: Deno.DirEntry[], n: number) {
 
 async function checkNodes() {
   const proc = await Deno.run({
-    cmd: ["jsexec", "-n", "-r", `write(system.nodes)`],
+    cmd: ["/sbbs/exec/jsexec", "-n", "-r", `write(system.nodes)`],
     stdout: "piped",
     stderr: "piped",
   });
@@ -105,7 +96,7 @@ async function backupDist() {
 
 async function runUpgradeJs() {
   const proc = await Deno.run({
-    cmd: ["jsexec", "-n", "/sbbs/exec/update.js"],
+    cmd: ["/sbbs/exec/jsexec", "-n", "/sbbs/exec/update.js"],
     stdout: "piped",
     stderr: "piped",
   });
