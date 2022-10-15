@@ -56,7 +56,7 @@ RUN apt-get update \
 COPY buildscripts/deno-download.sh /tmp/deno-download.sh
 RUN chmod +x /tmp/deno-download.sh \
     && /tmp/deno-download.sh \
-    && rm /tmp/deno-download.sh
+    && rm -rf /tmp/*
 
 # Create sbbs user/group - passwordless sudo
 RUN addgroup --gid 1000 sbbs \
