@@ -16,6 +16,9 @@
 # Using bullseye-slim as baseline, to be able to use node based scripts.
 FROM debian:bullseye-slim as base
 
+# Label for ghcr.io
+LABEL org.opencontainers.image.source=https://github.com/bbs-io/synchronet-docker
+
 # RUN echo "Building on $(uname -m)"
 
 # Build Arguments - GH_TOKEN needed to determine current Deno version
