@@ -8,7 +8,7 @@ version: "3.8"
 services:
   sbbs:
     container_name: sbbs
-    image: bbsio/synchronet:nightly
+    image: bbsio/synchronet:3.19c
     deploy:
       restart_policy:
         condition: any
@@ -47,7 +47,7 @@ services:
       # - 993:993 #imap+tls
   sbbs_irc:
     container_name: sbbs_irc
-    image: bbsio/synchronet:nightly
+    image: bbsio/synchronet:3.19c
     deploy:
       restart_policy:
         condition: any
@@ -59,7 +59,7 @@ services:
 
   sbbs_ecweb:
     container_name: sbbs_ecweb
-    image: bbsio/synchronet:nightly
+    image: bbsio/synchronet:3.19c
     deploy:
       restart_policy:
         condition: any
@@ -71,7 +71,7 @@ services:
       - 51080:80
 
   sbbs_rmweb:
-    image: bbsio/synchronet:nightly
+    image: bbsio/synchronet:3.19c
     deploy:
       restart_policy:
         condition: any

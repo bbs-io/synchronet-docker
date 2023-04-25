@@ -19,34 +19,12 @@ For the `@bbs/synchronet` utility,
 
 ## UPDATES
 
-### 2022-10-14
+**Stick to `bbsio/synchronet:3.19c` if you are currently running a version prior
+to `3.20` you should until this project is updated to work through issues
+regarding the `3.20` migration scripts. They don't seem to like `/sbbs/ctrl` as
+a symbolic link inside the container.**
 
-- Will now create and run as user `sbbs(1000)` and group `sbbs(1000)` instead of
-  root. Passwordless sudo is setup in the environment
-
-### 2022-09-08
-
-- `linux/x86-64` builds only for now... ARM builds have been too problematic.
-- Removed 3.19b from docker images, they were broken on AMD and some Intel
-  platforms.
-- Stale Nightlies removed.
-- `latest`, `3` and `3.19` are from a recent nightly commit.
-- `nightly` builds are working again, the latest commit does not match manually
-  pushed dates, this should clear when there's a future nightly commit.
-
-## Breaking change
-
-You now only need to mount a single directory `.` to `/sbbs-data`, if you were
-using the example docker-compose, you should be able to simply switch out the
-volume path(s) for a single entry. If you are overriding the web directory, you
-should still mount this as `mydir:/sbbs/web` which will work properly inside the
-container. Do not mount `./backup` to `/backup`, this will by symlinked to
-`/sbbs-data/backup`
-
-`/sbbs/scripts/sbbs` - will appear higher in the PATH statement before
-`/sbbs/exec/sbbs` this is intentional as it will run the initialization process
-before starting, this will appropriately link the directories in question from
-`/sbbs-data` to `/sbbs` inside the runtime instance.
+[See updates document](./_docs/updates.md) for more information.
 
 ### Windows Users
 
