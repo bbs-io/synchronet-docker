@@ -26,7 +26,7 @@ a symbolic link inside the container.**
 
 [See updates document](./_docs/updates.md) for more information.
 
-### Windows Users
+## Windows Users
 
 If you are running Windows, it is recommended that you first install WSL2, then
 Docker Desktop, configured for WSL2 and doing your volume mounts from inside
