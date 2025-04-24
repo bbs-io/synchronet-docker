@@ -13,21 +13,20 @@
 # ==============================================================================
 
 # Using bullseye-slim as baseline, to be able to use node based scripts.
-FROM debian:bullseye-slim as base
+FROM debian:bullseye-slim AS base
 
 # Label for ghcr.io
 LABEL org.opencontainers.image.source=https://github.com/bbs-io/synchronet-docker
 
 # RUN echo "Building on $(uname -m)"
 
-# Build Arguments - GH_TOKEN needed to determine current Deno version
-ARG GH_TOKEN
+# Build Arguments
 ARG DEBIAN_FRONTEND=noninteractive
 ONBUILD ARG DEBIAN_FRONTEND=noninteractive
 
 # Environment variables for use
 ENV TERM=xterm
-ENV DENO_DIR /sbbs-data/.deno
+ENV DENO_DIR=/sbbs-data/.deno
 ENV DENO_INSTALL_ROOT=$DENO_DIR/bin
 ENV SBBSCTRL=/sbbs/ctrl
 ENV SBBSEXEC=/sbbs/exec
@@ -96,8 +95,8 @@ RUN echo "\n--------------------------------------------------------\nChecking o
 
 # Build Synchronet - Install
 RUN cd ./install \
-    && sed -i.bak '/git/d' ./GNUmakefile \
-    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs install
+    && sed -i.bak '/git/d' ./install-sbbs.mk \
+    && make RELEASE=1 NO_X=1 SBBSDIR=/sbbs -f ./install-sbbs.mk install
 
 # Build Synchronet - Other executables (upgrade_*)
 RUN cd ./src/sbbs3 \
