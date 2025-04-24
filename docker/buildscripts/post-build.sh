@@ -25,5 +25,3 @@ rm -rf /sbbs/3rdp
 rm -rf /sbbs/src
 rm -rf /sbbs/repo
 
-cd /sbbs/scripts
-deno -q vendor ./init.ts

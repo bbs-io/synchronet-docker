@@ -5,7 +5,7 @@ import {
 	ensureFileSync,
 	ensureDirSync,
 	ensureSymlinkSync,
-} from "https://deno.land/std@0.159.0/fs/mod.ts";
+} from "https://deno.land/std@0.224.0/fs/mod.ts";
 
 // get directory entries to start from
 const dirDist = Array.from(Deno.readDirSync("/sbbs/dist"));
@@ -157,7 +157,7 @@ async function checkAll() {
 	const f = Deno.openSync("/sbbs-data/lock");
 	try {
 		// attempt to lock file, single initialization at a time.
-		await Deno.flock(f.rid, true);
+		await f.lock();
 
 		ensureDirSync(`/sbbs-data/backup`);
 		ensureSymlinkSync(`/sbbs-data/backup`, `/backup`);
@@ -183,7 +183,7 @@ async function checkAll() {
 			upgrade(!!oldVersion);
 		}
 	} finally {
-		await Deno.funlock(f.rid).catch(() => {});
+		await f.unlock().catch(() => {});
 		await Deno.remove("/sbbs-data/lock").catch(() => {});
 	}
 }
