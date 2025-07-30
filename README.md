@@ -153,7 +153,7 @@ Other services/ports that may be enabled:
 This project is ISC Licensed, Synchronet itself is mostly GPL.
 
 <!--
-Update: 2024-01-30 - restart automated builds
+Update: 2025-07-30 - restart automated builds
 
 docker buildx build --progress plain \
   --build-arg "GH_TOKEN=$GH_TOKEN" \
