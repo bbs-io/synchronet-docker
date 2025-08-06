@@ -1,170 +1,338 @@
-# Synchronet BBS Software
+# Synchronet BBS Docker Environment
 
-**[Synchronet](http://wiki.synchro.net/)** is a modern bulletin board software
-supporting classic terminal interfaces as well as modern web interfaces and
-other services.
+This directory contains a comprehensive Docker setup for building and running Synchronet BBS. It provides a flexible build system and a production-ready runtime environment.
 
-The [repository source](https://github.com/bbs-io/synchronet-docker/) is meant
-to build/push to
-[bbsio/synchronet on Docker Hub](https://hub.docker.com/repository/docker/bbsio/synchronet).
-For the `@bbs/synchronet` utility,
-[click here](https://github.com/bbs-io/synchronet-docker-util)
+## Quick Start
 
-### Tags
+1.  **Build a runtime image:**
+    ```bash
+    # Build from master branch with runtime support
+    ./docker-build.sh -r
+    ```
 
-- `:latest` - The latest stable release version (3.18b)
-- `#`, `#.##`, `#.##x` - Major, Minor, Patch options
-- `:nightly` - The latest nightly
-- `:nightly-YYYYMMDD` - Specific nightly (ex: `nightly-20210222`)
+2.  **Start the container:**
+    ```bash
+    # Use the helper script to start a container with default settings
+    ./run-runtime.sh start
+    ```
 
-## UPDATES
+3.  **Administer your BBS:**
+    ```bash
+    # Attach to the UMonitor (UNIX Monitor) session
+    ./run-runtime.sh attach
+    ```
 
-**Stick to `bbsio/synchronet:3.19c` if you are currently running a version prior
-to `3.20` you should until this project is updated to work through issues
-regarding the `3.20` migration scripts. They don't seem to like `/sbbs/ctrl` as
-a symbolic link inside the container.**
+4.  **View logs:**
+    ```bash
+    # Follow the container logs
+    ./run-runtime.sh logs
+    ```
 
-[See updates document](./_docs/updates.md) for more information.
+## Building Docker Images
 
-## Windows Users
+The `docker-build.sh` script is used to create Synchronet Docker images. It supports building from git or official tarballs.
 
-If you are running Windows, it is recommended that you first install WSL2, then
-Docker Desktop, configured for WSL2 and doing your volume mounts from inside
-WSL2 (such as with Ubuntu). VS Code with WSL Remote extension will make editing
-much easier to work with. Note: you can access your WSL2 instances in explorer
-via `\\wsl$`. You may want to add your SBBS volume directory to your Quick
-access shortcuts.
+### Build Script: `docker-build.sh`
 
-## First Run
-
-For your first run, you may want to run the Synchronet Configuration Program
-(scfg) before you proceed to start any services.
-
-    mkdir -p ~/sbbs
-    cd ~/sbbs
-    docker run --rm -it -v "$PWD:/sbbs-data" bbsio/synchronet:latest scfg
-
-This will create your sbbs storage directory inside your profile, and run the
-synchronet configuration program with that directory connected. This container
-is setup so that the data directories are initialized on first run of (`scfg` or
-`sbbs`) if necessary.
-
-## Docker Compose
-
-The easiest way to get running is with docker-compose.
-
-    mkdir -p ~/sbbs
-    cd ~/sbbs
-    wget -O docker-compose.yml https://raw.githubusercontent.com/bbs-io/synchronet-docker/master/docker-compose.yml
-    docker-compose up -d
-    sudo chmod -R a+rwX ./*
-
-To shutdown:
-
-    docker-compose down
-
-To get a bash prompt inside the running container:
-
-    docker exec -it sbbs bash
-
-## Editing Content
-
-If you are wanting to edit/update files, you may want to run the following on
-your common shared path, as files are created as root within the container.
-
-```
-sudo chmod a+rwX ~/sbbs
+**Usage:**
+```bash
+./docker-build.sh [OPTIONS]
 ```
 
-or
+**Options:**
 
+| Short | Long           | Description                                           | Default   |
+|-------|----------------|-------------------------------------------------------|-----------|
+| `-t`  | `--tag`        | Git tag or 'master'                                   | `master`  |
+| `-b`  | `--build-type` | Build type: `gitbuild` or `tarballs`                  | both      |
+| `-r`  | `--runtime`    | Create a lightweight runtime image                    | disabled  |
+| `-v`  | `--verbose`    | Enable verbose output                                 | disabled  |
+| `-n`  | `--dry-run`    | Show what would be done without executing             | disabled  |
+| `-h`  | `--help`       | Show the help message                                 |           |
+
+**Examples:**
+
+```bash
+# Build all image types for the master branch
+./docker-build.sh
+
+# Build all types for a specific tag (e.g., sbbs320c)
+./docker-build.sh -t sbbs320c
+
+# Build only the gitbuild type for master and create a runtime image
+./docker-build.sh -b gitbuild -r
+
+# Perform a dry run for a specific tag with verbose output
+./docker-build.sh -t sbbs320c -r -v -n
 ```
-docker exec -it sbbs sbbs-access
+
+## Docker Compose Deployment
+
+Synchronet supports production deployment using Docker Compose. The `docker-build.sh` script generates compose files automatically when building runtime images.
+
+### Compose Files and Helper Script
+
+- Compose files: `docker-compose-{TAG}-{BUILDTYPE}.yml`
+- Persistent data: `./volume-synchronet-{TAG}-{BUILDTYPE}-runtime/`
+- Helper script: `run-compose.sh` (recommended for managing deployments)
+
+**Usage:**
+
+```bash
+# Build and generate compose files
+./docker-build.sh -r
+
+# Start deployment (prompts for compose file selection if multiple exist)
+./run-compose.sh start
+
+# View logs
+./run-compose.sh logs
+
+# Attach to umonitor
+./run-compose.sh attach
+
+# Stop deployment
+./run-compose.sh stop
 ```
 
-## Volumes
+You can also use `docker-compose` directly:
 
-In order to better support portability, you should mount your storage directory
-to `/sbbs-data/` inside the running container. Most directories will be
-populated on first run.
+```bash
+docker-compose -f docker-compose-master-gitbuild.yml up -d
+docker-compose -f docker-compose-master-gitbuild.yml logs -f
+docker-compose -f docker-compose-master-gitbuild.yml down
+```
 
-Under your `/sbbs-data/` directory, the following directories will be populated.
+**Note:** Compose files use multi-stage builds. You can deploy directly without running the build script first; Docker Compose will build all required images automatically.
 
-- `backup/defaults/` - will be initialized with the default build for synchronet
-  on first run, or upgrade.
-- `ctrl/` - note: `text.dat` will be overwritten on updated versions.
-- `data/` - Synchronet's default data storage directory, includes file
-  directories.
-- `text/`
-- `web/` - default populated from `/backup/defaults/web-ecweb4`
-- `data/`
-- `fido/`
-- `xtrn/` - external programs, will populate directories that don't exist on
-  first run or update
-- `mods/` - your customizations, empty by default
-- `nodes/node{n}` - shared nodes directory (mapped to `/sbbs/node{n}`
-  internally).
+## Port Mapping and Automatic Offsetting
 
-**WARNING:** If you are bringing in a configuration from outside this project,
-you should make sure your `ctrl/sbbs.ini` is _NOT_ binding to IPv6 addresses,
-this will likely cause problems running in the container.
+Compose files map all standard Synchronet ports:
 
-## Ports
+| Port   | Service   | Description                |
+|--------|-----------|----------------------------|
+| 23     | Telnet    | Main BBS terminal access   |
+| 22     | SSH       | Secure shell access        |
+| 80     | HTTP      | Web interface              |
+| 443    | HTTPS     | Secure web interface       |
+| 21     | FTP       | File transfer              |
+| 25     | SMTP      | Mail server                |
+| 110    | POP3      | Mail retrieval             |
+| 119    | NNTP      | News server                |
+| 6667   | IRC       | Chat server                |
+| 1123   | WebSocket | Web terminal               |
+| 11235  | WebSocket | Secure web terminal        |
 
-Synchronet is preconfigured for the following services/ports, see
-`/sbbs/ctrl/sbbs.ini` and `/sbbs/ctrl/services.ini` for additional
-configuration.
+**Automatic Port Offsetting:**  
+When generating multiple compose files, `docker-build.sh` automatically offsets host ports to prevent conflicts. For example, the second compose file will map Telnet to port `2323`, HTTP to `8080`, etc.
 
-- `80` - http
-- `443` - https
-- `1123` - ws-term - used for ftelnet virtual terminal web connections
-- `11235` - wss-term - used for ftelnet virtual terminal web connections
-- `21` - ftp
-- `22`- ssh
-- `23` - telnet
-- `513`- rlogin
-- `64` - petscii 40-column
-- `128` - petscii 128-column
-- `25` - smtp-mail
-- `587` - smtp-submit
-- `465` - smtp-submit+tls
-- `110` - pop3
-- `995` - pop3+tls
-- `119` - nntp
-- `563` - nntps
-- `18` - message send prot
-- `11` - active user svc
-- `17` - qotd
-- `79` - finger
-- `6667` - irc
+## Volume Mounts
 
-Other services/ports that may be enabled:
+Compose files create one persistent volume per deployment:
 
-- `5500` - hotline
-- `5501` - hotline-trans
-- `24554` - binkp
-- `24553` - binkps
-- `143` - imap
-- `993` - imap+tls
-- `6697` - irc+tls
+- `./volume-synchronet-{TAG}-{BUILDTYPE}-runtime:/sbbs` — Complete Synchronet installation, configuration, data, and logs
 
-## License
 
-This project is ISC Licensed, Synchronet itself is mostly GPL.
+## Monitoring and Logging
 
-<!--
-Update: 2025-07-30 - restart automated builds
+Compose files include:
 
-docker buildx build --progress plain \
-  --build-arg "GH_TOKEN=$GH_TOKEN" \
-  -t bbsio/synchronet:nightly-20220903 \
-  -t bbsio/synchronet:nightly-20220905 \
-  -t bbsio/synchronet:nightly-20220907 \
-  -t bbsio/synchronet:nightly \
-  -t bbsio/synchronet:3.19 \
-  -t bbsio/synchronet:3 \
-  -t bbsio/synchronet:latest \
-  --push \
-  --platform linux/amd64 \
-  ./docker
--->
+- Health checks to monitor BBS processes
+- Centralized logging with rotation
+- Automatic restart on failure
+
+**Health Check:**
+
+- Interval: 30 seconds
+- Timeout: 10 seconds
+- Retries: 3
+- Start period: 5 seconds
+
+**Logging:**
+
+- JSON file driver
+- Maximum 10MB per file
+- Keep 3 log files
+- Stored in `./bbs-logs/` directory
+
+## Troubleshooting
+
+**Permission Issues:**
+
+```bash
+# Fix ownership of data directories
+sudo chown -R 1000:1000 ./bbs-data ./bbs-logs ./bbs-run
+```
+
+**Port Conflicts:**
+
+If ports are already in use, modify the compose file to use different host ports. The build script attempts to prevent this automatically by offsetting ports.
+
+```yaml
+ports:
+  - "2323:23"  # Map telnet to port 2323 instead of 23
+  - "8080:80"  # Map HTTP to port 8080 instead of 80
+```
+
+**Container Won't Start:**
+
+Check the logs for startup issues:
+
+```bash
+docker-compose -f docker-compose-{TAG}-{BUILDTYPE}.yml logs
+```
+
+Common issues:
+
+- Insufficient permissions on mounted volumes
+- Port conflicts with other services
+- Missing or corrupt configuration files
+
+## Advanced Usage
+
+**Multiple Deployments:**
+
+You can run multiple BBS instances by using different tags/build types. The build script generates separate compose files and data directories, and offsets ports to prevent conflicts.
+
+```bash
+# Build different versions
+./docker-build.sh -t master -b gitbuild -r
+./docker-build.sh -t stable -b tarballs -r
+
+# Deploy both using the helper script (it will prompt for selection)
+./run-compose.sh start  # Start the first instance
+./run-compose.sh start  # Start the second instance
+
+# Or deploy manually
+docker-compose -f docker-compose-master-gitbuild.yml up -d
+docker-compose -f docker-compose-stable-tarballs.yml up -d
+```
+
+## Runtime Environment
+
+The runtime images are lightweight, production-ready containers based on Debian Bookworm Slim.
+
+### Key Features
+
+-   **Security**: Runs as a non-root user `sbbs` with minimal privileges.
+-   **Process Management**: `supervisord` manages all services (`rsyslog`, `sbbs`, `umonitor`) with auto-restart.
+-   **Logging**: Centralized logging via `rsyslog` to `/var/log/sbbs.log` (facility `local3`) and to the container's stdout.
+-   **Administration**: `UMonitor` is accessible via the `run-runtime.sh attach` command.
+-   **Health Checks**: A Docker health check monitors the main `sbbs` process.
+
+### Managing Runtime Containers
+
+The `run-runtime.sh` script simplifies container management.
+
+**Usage:**
+```bash
+./run-runtime.sh {start|stop|restart|logs|attach|exec|status} [image_name]
+```
+
+**Commands:**
+
+| Command            | Description                                                |
+|--------------------|------------------------------------------------------------|
+| `start`            | Start a new runtime container.                             |
+| `stop`             | Stop and remove the running container.                     |
+| `restart`          | Restart the container.                                     |
+| `logs`             | View container logs in follow mode (`-f`).                 |
+| `attach`           | Attach to the `umonitor` screen session (recommended).     |
+| `exec`             | Open a `bash` shell inside the container.                  |
+| `status`           | Show the container's status and port mappings.             |
+| `attach-container` | Attach directly to the container's primary process (legacy). |
+
+**Examples:**
+
+```bash
+# Start a container using the default image
+./run-runtime.sh start
+
+# Start a container with a specific image
+./run-runtime.sh start synchronet-sbbs320c-gitbuild-runtime
+
+# Attach to UMonitor
+./run-runtime.sh attach
+
+# View logs
+./run-runtime.sh logs
+```
+
+### Persistent Data
+
+For production use, it is crucial to use Docker volumes to persist your BBS data. The `run-runtime.sh` script uses `sbbs-test-ctrl`, `sbbs-test-data`, and `sbbs-test-logs` for local testing. For production, you should use more appropriately named volumes.
+
+**Example `docker run` command for production:**
+
+```bash
+docker run -d --name sbbs-container \
+  -p 23:23 \
+  -p 80:80 \
+  -p 22:22 \
+  -v sbbs-ctrl:/sbbs/ctrl \
+  -v sbbs-data:/sbbs/data \
+  -v sbbs-logs:/var/log/sbbs \
+  --restart=unless-stopped \
+  synchronet-master-gitbuild-runtime
+```
+
+### Exposed Ports
+
+The runtime Dockerfile exposes the following standard Synchronet ports:
+
+-   **Telnet**: `23`
+-   **SSH**: `22`, `24`
+-   **Web**: `80`, `443`
+-   **FTP**: `21`
+-   **Email**: `25` (SMTP), `110` (POP3)
+-   **News**: `119` (NNTP)
+-   **Services**: `1123`, `11235`
+
+## Administration and Troubleshooting
+
+### BBS Configuration
+
+-   **SCFG**: To run the main configuration tool, execute it as the `sbbs` user.
+    ```bash
+    docker exec -it sbbs-container su -c "/sbbs/exec/scfg" sbbs
+    ```
+-   **Shell Access**: To get a shell as the `sbbs` user:
+    ```bash
+    docker exec -it sbbs-container su - sbbs
+    ```
+
+### Service and Log Inspection
+
+-   **Supervisor Status**: Check the status of all managed services.
+    ```bash
+    docker exec sbbs-container supervisorctl status
+    ```
+-   **Service Logs**: Tail logs for a specific service managed by `supervisorctl`.
+    ```bash
+    # Tail logs for the main sbbs service
+    docker exec sbbs-container supervisorctl tail sbbs
+
+    # Tail logs for umonitor
+    docker exec sbbs-container supervisorctl tail umonitor
+    ```
+-   **Syslog**: View the Synchronet-specific syslog file directly.
+    ```bash
+    docker exec sbbs-container tail -f /var/log/sbbs.log
+    ```
+
+## File Overview
+
+-   `Dockerfile.base`: Base image with build dependencies.
+-   `Dockerfile.gitbuild`: Builds Synchronet from the git repository.
+-   `Dockerfile.tarballs`: Builds Synchronet from official release tarballs.
+-   `Dockerfile.runtime`: Creates the lightweight production-ready runtime image.
+-   `docker-build.sh`: The main script for building all Docker images.
+-   `run-runtime.sh`: Helper script to manage runtime containers.
+-   `run-compose.sh`: Helper script to manage compose deployments.
+-   `docker-compose.template.yml`: Compose file template for production deployments.
+-   `supervisord.conf`: Configuration for `supervisord` process manager.
+-   `rsyslog-sbbs.conf`: `rsyslog` configuration to handle Synchronet logs.
+-   `logrotate-sbbs`: Log rotation configuration for `/var/log/sbbs.log`.
+-   `entrypoint.sh`: Initializes the container environment (e.g., sets up `sbbs.ini` for syslog).
+-   `umonitor-screen.sh`: Wrapper to run `umonitor` inside a `screen` session.
+-   `attach-umonitor.sh`: Helper script to attach to the `umonitor` screen session.

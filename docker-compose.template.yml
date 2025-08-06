@@ -1,0 +1,105 @@
+services:
+  synchronet-base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: synchronet-base
+    
+  synchronet-build:
+    build:
+      context: .
+      dockerfile: Dockerfile.{{BUILDTYPE}}
+      args:
+        - TAG={{TAG}}
+    image: synchronet-{{TAG}}-{{BUILDTYPE}}
+    depends_on:
+      - synchronet-base
+    
+  synchronet:
+    build:
+      context: .
+      dockerfile: Dockerfile.runtime
+      args:
+        - BUILD_IMAGE=synchronet-{{TAG}}-{{BUILDTYPE}}
+        - TAG={{TAG}}
+        - BUILDTYPE={{BUILDTYPE}}
+    image: synchronet-{{TAG}}-{{BUILDTYPE}}-runtime
+    container_name: sbbs-{{TAG}}-{{BUILDTYPE}}
+    depends_on:
+      - synchronet-build
+    restart: unless-stopped
+    ports:
+      # Web services
+      - "80:80"       # HTTP
+      - "443:443"     # HTTPS
+      - "1123:1123"   # WebSocket terminal
+      - "11235:11235" # WebSocket terminal (secure)
+      
+      # Terminal services
+      - "21:21"       # FTP
+      - "22:22"       # SSH
+      - "23:23"       # Telnet
+      - "513:513"     # RLogin
+      - "64:64"       # PETSCII 40-column
+      - "128:128"     # PETSCII 128-column
+      
+      # Mail services
+      - "25:25"       # SMTP
+      - "587:587"     # SMTP submission
+      - "465:465"     # SMTP submission over TLS
+      - "110:110"     # POP3
+      - "995:995"     # POP3 over TLS
+      - "143:143"     # IMAP
+      - "993:993"     # IMAP over TLS
+      
+      # News services
+      - "119:119"     # NNTP
+      - "563:563"     # NNTP over TLS
+      
+      # BBS services
+      - "18:18"       # Message send protocol
+      - "11:11"       # Active user service
+      - "17:17"       # Quote of the day
+      - "79:79"       # Finger
+      
+      # Chat services
+      - "6667:6667"   # IRC
+      - "6697:6697"   # IRC over TLS
+      
+      # File transfer services
+      - "5500:5500"   # Hotline
+      - "5501:5501"   # Hotline transfer
+      
+      # Mail transport services
+      - "24554:24554" # BinkP
+      - "24553:24553" # BinkP over TLS
+    
+    volumes:
+      # Main Synchronet data directory (includes logs)
+      - ./volume-synchronet-{{TAG}}-{{BUILDTYPE}}-runtime/sbbs:/sbbs
+    
+    environment:
+      # Synchronet environment variables
+      - SBBSCTRL=/sbbs/ctrl
+      - SBBSEXEC=/sbbs/exec
+      
+      # Container configuration
+      - TZ=UTC
+    
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "sbbs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    
+    # Enable logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    name: synchronet-network
