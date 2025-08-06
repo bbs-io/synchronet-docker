@@ -1,0 +1,17 @@
+/var/log/sbbs*.log {
+    weekly
+    missingok
+    rotate 52
+    notifempty
+    create 640 root root
+    sharedscripts
+    postrotate
+        # In Docker, use supervisorctl to restart rsyslog or send HUP signal
+        if command -v supervisorctl >/dev/null 2>&1; then
+            supervisorctl restart rsyslog > /dev/null 2>&1 || true
+        else
+            # Fallback: send HUP signal to rsyslog process
+            pkill -HUP rsyslogd > /dev/null 2>&1 || true
+        fi
+    endscript
+}

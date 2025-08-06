@@ -1,0 +1,21 @@
+FROM synchronet-base AS builder
+
+ARG TAG
+ARG BUILDTYPE=tarballs
+
+RUN if [ "$TAG" = "master" ]; then SRC_FILE="sbbs_src.tgz"; else SRC_FILE="ssrc${TAG#sbbs}.tgz"; fi && \
+    wget https://vert.synchro.net/Synchronet/$SRC_FILE && \
+    tar -xzf $SRC_FILE && \
+    rm $SRC_FILE
+
+RUN if [ "$TAG" = "master" ]; then RUN_FILE="sbbs_run.tgz"; else RUN_FILE="srun${TAG#sbbs}.tgz"; fi && \
+    wget https://vert.synchro.net/Synchronet/$RUN_FILE && \
+    tar -xzf $RUN_FILE && \
+    rm $RUN_FILE
+
+WORKDIR /sbbs/src/sbbs3 
+RUN echo RELEASE=1 > /sbbs/src/build/localdefs.mk
+RUN make NOCAP=1 GIT=NO install
+RUN /sbbs/exec/jsexec update.js
+# Package /sbbs as a tarball with dereferenced symlinks
+RUN tar -czhf /tmp/sbbs-$TAG-$BUILDTYPE.tar.gz --dereference --exclude=sbbs/src -C / sbbs

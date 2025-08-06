@@ -1,0 +1,17 @@
+FROM synchronet-base AS builder
+
+ARG TAG
+ARG BUILDTYPE=gitbuild
+
+RUN wget https://gitlab.synchro.net/main/sbbs/-/raw/master/install/install-sbbs.mk
+
+RUN if [ "$TAG" = "master" ]; then \
+        TAG=""; \
+        RELEASE=""; \
+    else \
+        RELEASE="1"; \
+    fi && \
+    make -f install-sbbs.mk RELEASE="$RELEASE" NOCAP=1
+RUN /sbbs/exec/jsexec update.js
+
+RUN tar -czhf /tmp/sbbs-$TAG-$BUILDTYPE.tar.gz --dereference --exclude=sbbs/repo -C / sbbs

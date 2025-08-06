@@ -1,0 +1,95 @@
+ARG BUILD_IMAGE
+
+FROM ${BUILD_IMAGE} AS builder
+
+FROM debian:bookworm-slim
+
+# Avoid interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install runtime dependencies and supervisord
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    supervisor \
+    rsyslog \
+    screen \
+    libarchive13 \
+    libncurses6 \
+    libncursesw6 \
+    libgdbm-compat4 \
+    libperl5.36 \
+    python3 \
+    python3-minimal \
+    libgd3 \
+    libx11-6 \
+    libnspr4 \
+    libcap2 \
+    libmosquitto1 \
+    libsdl2-2.0-0 \
+    libgtk-3-0 \
+    libglade2-0 \
+    lrzsz \
+    gkermit \
+    net-tools \
+    zlib1g \
+    libssl3 \
+    libbz2-1.0 \
+    libreadline8 \
+    libsqlite3-0 \
+    libffi8 \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create sbbs user and group
+RUN groupadd -r sbbs && useradd -r -g sbbs -d /sbbs -s /bin/bash sbbs
+
+# Set up directories with proper permissions
+RUN mkdir -p /sbbs && \
+    mkdir -p /var/log/sbbs && \
+    mkdir -p /var/run/sbbs && \
+    chown -R sbbs:sbbs /sbbs /var/log/sbbs /var/run/sbbs
+
+# Set environment variables for Synchronet
+ENV SBBSCTRL=/sbbs/ctrl
+ENV SBBSEXEC=/sbbs/exec
+
+# Copy the packaged tarball from builder but don't extract it yet
+ARG TAG
+ARG BUILDTYPE
+COPY --from=builder /tmp/sbbs-$TAG-$BUILDTYPE.tar.gz /usr/local/share/sbbs-install.tar.gz
+
+# Copy supervisord configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copy rsyslog configuration for Synchronet
+COPY rsyslog-sbbs.conf /etc/rsyslog.d/49-sbbs.conf
+
+# Copy log rotation configuration
+COPY logrotate-sbbs /etc/logrotate.d/sbbs
+
+# Copy entrypoint script and umonitor helpers
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY umonitor-screen.sh /usr/local/bin/umonitor-screen.sh
+COPY attach-umonitor.sh /usr/local/bin/attach-umonitor.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/umonitor-screen.sh /usr/local/bin/attach-umonitor.sh
+
+# Set up syslog for sbbs
+RUN touch /var/log/sbbs.log && \
+    chown root:root /var/log/sbbs.log && \
+    chmod 644 /var/log/sbbs.log
+
+WORKDIR /sbbs
+
+# Expose common Synchronet ports
+# Telnet: 23, SSH: 22, Web: 80/443, FTP: 21, SMTP: 25, POP3: 110, NNTP: 119
+# Services: 24 (SSH), 1123 (Services), 11235 (Services)
+EXPOSE 23 22 80 443 21 25 110 119 24 1123 11235
+
+# Health check to verify sbbs is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD pgrep -f "sbbs" > /dev/null || exit 1
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Start supervisord which will manage all services
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
