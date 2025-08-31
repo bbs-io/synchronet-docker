@@ -1,0 +1,12 @@
+{
+  "release": {
+    "name": "sbbs320d",
+    "hash": "8dbeab397ad4c3b30cbfee3aeb19605298082b45",
+    "tag": "sbbs320d"
+  },
+  "nightly": {
+    "name": "20250831",
+    "hash": "42167d4d30dd9ebaad0603a6f504d3f3d9e7e33a",
+    "tag": "42167d4d30dd9ebaad0603a6f504d3f3d9e7e33a"
+  }
+}
